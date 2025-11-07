@@ -1,19 +1,19 @@
 services:
-  # Frontend - Vue.js Portfolio
+  # Frontend - React/Vite Portfolio Chatbot
   frontend:
     build:
-      context: .
+      context: ./porto-frontend
       dockerfile: Dockerfile
-    container_name: portfolio-frontend
+    container_name: agent-v1-frontend
     ports:
-      - "3036:3036"
+      - "5174:5173"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
     networks:
       - portfolio-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3036"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5173"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -29,9 +29,9 @@ services:
     build:
       context: ./porto-backend
       dockerfile: Dockerfile
-    container_name: portfolio-chatbot
+    container_name: agent-v1-backend
     ports:
-      - "8090:8090"
+      - "8091:8090"
     env_file:
       - ./porto-backend/.env
     environment:
@@ -39,6 +39,7 @@ services:
     volumes:
       - ./porto-backend/data:/app/data:ro
       - ./porto-backend/portfolio-db:/app/portfolio-db
+      - ./porto-backend/gmail_token.json:/app/gmail_token.json:rw
     restart: unless-stopped
     networks:
       - portfolio-network

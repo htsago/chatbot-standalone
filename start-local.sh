@@ -1,96 +1,102 @@
 #!/bin/bash
 
-# Start script for local development (without Docker)
-# This script starts both the backend and frontend services locally
-
 set -e
 
-echo "Starting Portfolio Chatbot locally..."
-echo ""
-
-# Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+NC='\033[0m'
 
-# Function to check if a port is in use
-check_port() {
-    if lsof -Pi :$1 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
-        return 0
-    else
-        return 1
-    fi
-}
+log_info() { echo -e "${BLUE}ℹ${NC}  $1"; }
+log_success() { echo -e "${GREEN}✓${NC}  $1"; }
+log_warning() { echo -e "${YELLOW}⚠${NC}  $1"; }
+log_error() { echo -e "${RED}✗${NC}  $1"; }
+log_step() { echo -e "${CYAN}→${NC}  $1"; }
 
-# Check if backend port is already in use
-if check_port 8090; then
-    echo -e "${YELLOW}WARNING: Port 8090 is already in use. Backend might already be running.${NC}"
+echo -e "${BLUE}🚀 Starting Herman AI Local Development Environment...${NC}"
+echo ""
+
+log_step "Clearing caches..."
+if [ -d "porto-backend" ]; then
+    log_step "Clearing backend cache..."
+    find porto-backend -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+    find porto-backend -type f \( -name "*.pyc" -o -name "*.pyo" \) -delete 2>/dev/null || true
+    find porto-backend -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
+    log_success "Backend cache cleared"
 else
-    echo -e "${BLUE}Starting Backend on port 8090...${NC}"
-    cd porto-backend
-    if [ ! -d "venv" ]; then
-        echo -e "${YELLOW}WARNING: Virtual environment not found. Creating one...${NC}"
-        python3 -m venv venv
-    fi
-    
-    # Install dependencies if needed
-    if [ ! -f "venv/bin/python3" ]; then
-        echo -e "${YELLOW}WARNING: Virtual environment seems broken. Recreating...${NC}"
-        rm -rf venv
-        python3 -m venv venv
-    fi
-    
-    # Start backend in background
-    venv/bin/python3 -m app.main > ../backend.log 2>&1 &
-    BACKEND_PID=$!
-    echo -e "${GREEN}Backend started (PID: $BACKEND_PID)${NC}"
-    echo -e "${BLUE}   Logs: backend.log${NC}"
-    cd ..
-    
-    # Wait for backend to be ready
-    echo -e "${BLUE}Waiting for backend to be ready...${NC}"
-    for i in {1..30}; do
-        if curl -s http://localhost:8090/health > /dev/null 2>&1; then
-            echo -e "${GREEN}Backend is ready!${NC}"
-            break
-        fi
-        sleep 1
-    done
+    log_warning "porto-backend directory not found"
 fi
 
-# Check if frontend port is already in use
-if check_port 5173; then
-    echo -e "${YELLOW}WARNING: Port 5173 is already in use. Frontend might already be running.${NC}"
+if [ -d "porto-frontend" ]; then
+    log_step "Clearing frontend cache..."
+    rm -rf porto-frontend/{node_modules/.cache,dist,build,.vite} 2>/dev/null || true
+    log_success "Frontend cache cleared"
 else
-    echo -e "${BLUE}Starting Frontend on port 5173...${NC}"
+    log_warning "porto-frontend directory not found"
+fi
+
+echo ""
+
+if [ -d "porto-backend" ]; then
+    log_step "Starting backend..."
+    cd porto-backend
+    
+    if [ ! -d "venv" ]; then
+        log_info "Creating virtual environment..."
+        python3 -m venv venv
+    fi
+    
+    log_info "Installing/updating dependencies..."
+    venv/bin/pip install -q -r requirements.txt
+    
+    if pgrep -f "app\.main" >/dev/null; then
+        log_warning "Backend is already running"
+    else
+        nohup venv/bin/python3 -m app.main > ../backend.log 2>&1 &
+        sleep 2
+        if pgrep -f "app\.main" >/dev/null; then
+            log_success "Backend started (port 8090)"
+        else
+            log_error "Failed to start backend. Check backend.log for details."
+        fi
+    fi
+    
+    cd ..
+else
+    log_warning "Backend not started: missing porto-backend directory"
+fi
+
+if [ -d "porto-frontend" ]; then
+    log_step "Starting frontend..."
     cd porto-frontend
     
-    # Check if node_modules exists
     if [ ! -d "node_modules" ]; then
-        echo -e "${YELLOW}WARNING: Dependencies not found. Installing...${NC}"
-        npm install
+        log_info "Installing dependencies..."
+        npm ci --silent
     fi
     
-    # Start frontend in background
-    npm run dev > ../frontend.log 2>&1 &
-    FRONTEND_PID=$!
-    echo -e "${GREEN}Frontend started (PID: $FRONTEND_PID)${NC}"
-    echo -e "${BLUE}   Logs: frontend.log${NC}"
+    if pgrep -f "porto-frontend.*vite" >/dev/null; then
+        log_warning "Frontend is already running"
+    else
+        nohup npm run dev > ../frontend.log 2>&1 &
+        sleep 2
+        if pgrep -f "porto-frontend.*vite" >/dev/null; then
+            log_success "Frontend started (port 5173)"
+        else
+            log_error "Failed to start frontend. Check frontend.log for details."
+        fi
+    fi
+    
     cd ..
+else
+    log_warning "Frontend not started: missing porto-frontend directory"
 fi
 
 echo ""
-echo -e "${GREEN}Services are starting!${NC}"
+log_success "Local development environment started!"
 echo ""
-echo -e "${BLUE}Frontend:${NC} http://localhost:5173"
-echo -e "${BLUE}Backend API:${NC} http://localhost:8090"
-echo -e "${BLUE}Health Check:${NC} http://localhost:8090/health"
-echo ""
-echo -e "${YELLOW}To stop the services, run:${NC}"
-echo -e "   pkill -f 'app.main'  # Stop backend"
-echo -e "   pkill -f 'vite'      # Stop frontend"
-echo ""
-echo -e "${YELLOW}Or use:${NC} ./stop-local.sh"
-echo ""
-
+echo -e "  ${GREEN}Frontend:${NC} http://localhost:5173"
+echo -e "  ${GREEN}Backend:${NC}  http://localhost:8090"
+echo -e "  ${GREEN}Logs:${NC}     backend.log, frontend.log"

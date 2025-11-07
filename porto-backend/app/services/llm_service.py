@@ -14,6 +14,7 @@ from app.core.exceptions import LLMServiceError
 from app.services.tool_manager import ToolManager
 from app.services.vector_store_service import VectorStoreService
 from app.services.message_parser import MessageParser
+from app.services.debug_service import DebugService
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -29,7 +30,6 @@ class LLMService:
     """Service for LLM agent interactions."""
     
     def __init__(self):
-        """Initialize LLM service with vector store, tools, and agent."""
         try:
             self.vector_store = VectorStoreService.initialize()
             self.tool_manager = ToolManager()
@@ -38,16 +38,18 @@ class LLMService:
             self.llm = ChatGroq(model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE)
             self.checkpointer = InMemorySaver()
             self.message_parser = MessageParser()
+            self.debug_service = DebugService()
             self.agent = self._create_agent()
+            self._last_debug_mode = False
             logger.info("LLM service initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing LLM service: {str(e)}")
             raise LLMServiceError(f"Failed to initialize LLM service: {str(e)}") from e
 
-    def _create_agent(self):
+    def _create_agent(self, debug_mode: bool = False):
         """Create LangChain agent with tools."""
         try:
-            tools = self.tool_manager.create_langchain_tools()
+            tools = self.tool_manager.create_langchain_tools(debug_mode=debug_mode, debug_service=self.debug_service if debug_mode else None)
             agent = create_agent(
                 model=self.llm,
                 tools=tools,
@@ -76,21 +78,21 @@ class LLMService:
             pass
         return 0
 
-    def invoke(self, query: str, thread_id: Optional[str] = None) -> tuple[str, str, list[dict]]:
-        """
-        Invoke the agent with a query.
-        
-        Args:
-            query: User query string
-            thread_id: Optional thread ID for conversation continuity
-            
-        Returns:
-            Tuple of (answer, thread_id, tool_calls)
-        """
+    def invoke(self, query: str, thread_id: Optional[str] = None, debug_mode: bool = False) -> tuple[str, str, list[dict], Optional[dict]]:
+        """Invoke the agent with a query."""
         try:
+            if debug_mode:
+                self.debug_service.enable()
+                self.debug_service.reset()
+            else:
+                self.debug_service.disable()
+            
+            if debug_mode != self._last_debug_mode:
+                self.agent = self._create_agent(debug_mode=debug_mode)
+                self._last_debug_mode = debug_mode
+            
             thread_id = self._get_or_create_thread_id(thread_id)
             config = {"configurable": {"thread_id": thread_id}}
-            
             messages_before = self._get_messages_before_count(config)
             
             result = self.agent.invoke(
@@ -98,14 +100,22 @@ class LLMService:
                 config=config
             )
             
+            if debug_mode:
+                self.debug_service.track_agent_response(result)
+            
             answer = self.message_parser.extract_message_content(result)
+            
+            if debug_mode:
+                self.debug_service.track_model_response(answer)
+            
             tool_calls = self.message_parser.extract_tool_calls(
                 result,
                 messages_before,
                 tool_schema_getter=self.tool_manager.get_tool_schema
             )
             
-            return answer, thread_id, tool_calls
+            debug_info = self.debug_service.get_debug_info() if debug_mode else None
+            return answer, thread_id, tool_calls, debug_info
         except Exception as e:
             logger.error(f"Error invoking agent: {str(e)}")
             raise LLMServiceError(f"Failed to process query: {str(e)}") from e

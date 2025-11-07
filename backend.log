@@ -1,50 +1,199 @@
-INFO:     Started server process [67128]
+INFO:     Started server process [128284]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8090 (Press CTRL+C to quit)
-INFO:     127.0.0.1:33598 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33612 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
-INFO:app.services.vector_store_service:Loading existing vector store from portfolio-db
-INFO:faiss.loader:Loading faiss with AVX2 support.
-INFO:faiss.loader:Successfully loaded faiss with AVX2 support.
-INFO:app.services.llm_service:Agent created successfully with 4 tools
-INFO:app.services.llm_service:LLM service initialized successfully
-INFO:app.core.config:LLM service initialized successfully
-INFO:     127.0.0.1:33626 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:33626 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47642 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47642 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:47642 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:54294 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:54368 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:39194 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51572 - "OPTIONS /api/v1/chat HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:51572 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:42186 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:54622 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-INFO:     127.0.0.1:54000 - "POST /api/v1/chat HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50640 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50654 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50662 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50662 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53874 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:53874 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50282 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50282 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50282 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:18:44,547 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:18:45,212 - app.services.vector_store_service - INFO - Loading existing vector store from portfolio-db
+2025-11-07 15:18:45,217 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-11-07 15:18:45,435 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-11-07 15:18:45,781 - app.services.llm_service - INFO - Agent created successfully with 5 tools
+2025-11-07 15:18:45,782 - app.services.llm_service - INFO - LLM service initialized successfully
+2025-11-07 15:18:45,782 - app.core.dependencies - INFO - LLM service initialized successfully
+2025-11-07 15:18:45,783 - app.core.middleware - INFO - Response: 200 - Time: 1.236s - Path: /api/v1/tools
+INFO:     127.0.0.1:55142 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:18:45,784 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:18:45,786 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:55142 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:18:55,947 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:18:55,952 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:18:56,394 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:18:56,727 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:18:56,739 - app.core.middleware - INFO - Response: 200 - Time: 0.792s - Path: /api/v1/chat
+INFO:     127.0.0.1:57664 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:19:13,149 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:19:13,153 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:19:13,464 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:19:13,711 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:19:13,717 - app.core.middleware - INFO - Response: 200 - Time: 0.567s - Path: /api/v1/chat
+INFO:     127.0.0.1:39904 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:19:35,631 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:19:35,634 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:19:35,991 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:19:35,996 - app.core.middleware - INFO - Response: 200 - Time: 0.366s - Path: /api/v1/chat
+INFO:     127.0.0.1:47302 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:20:28,643 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:20:28,645 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:40012 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:20:28,647 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:20:28,649 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:40012 - "GET /api/v1/tools HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59098 - "OPTIONS /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:21:08,402 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:21:08,406 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:21:09,262 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:21:09,267 - app.core.middleware - INFO - Response: 200 - Time: 0.865s - Path: /api/v1/chat
+INFO:     127.0.0.1:59098 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:21:24,182 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:21:24,187 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:21:24,550 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:21:25,354 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-11-07 15:21:25,972 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:21:25,982 - app.core.middleware - INFO - Response: 200 - Time: 1.800s - Path: /api/v1/chat
+INFO:     127.0.0.1:45656 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:24:47,094 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:24:47,100 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:24:47,628 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:24:48,512 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-11-07 15:24:48,958 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:24:48,977 - app.core.middleware - INFO - Response: 200 - Time: 1.883s - Path: /api/v1/chat
+INFO:     127.0.0.1:48820 - "POST /api/v1/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42922 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:16,676 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:16,677 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:42922 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:16,682 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:16,683 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:42922 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:37,364 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:37,366 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:48190 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:37,377 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:37,378 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:48190 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:38,736 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:38,748 - app.core.middleware - INFO - Response: 200 - Time: 0.012s - Path: /api/v1/tools
+INFO:     127.0.0.1:48190 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:38,759 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:38,762 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:48190 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:51,480 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:51,481 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:54294 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:27:51,485 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:27:51,487 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:54294 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:18,426 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:18,431 - app.core.middleware - INFO - Response: 200 - Time: 0.006s - Path: /api/v1/tools
+INFO:     127.0.0.1:33818 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:26,377 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:26,379 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:33818 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:26,402 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:26,405 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:33818 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:26,748 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:26,749 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:33818 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:26,754 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:26,756 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:33818 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:42,878 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:42,888 - app.core.middleware - INFO - Response: 200 - Time: 0.010s - Path: /api/v1/tools
+INFO:     127.0.0.1:39870 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:29:43,789 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:29:43,791 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:39870 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:30:10,016 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:30:10,018 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:50432 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:30:49,729 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:30:49,732 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:58804 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:30:49,752 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:30:49,755 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:58804 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:30:53,700 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:30:53,715 - app.core.middleware - INFO - Response: 200 - Time: 0.016s - Path: /api/v1/tools
+INFO:     127.0.0.1:58804 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:30:53,757 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:30:53,759 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:58804 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:31:46,363 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:31:46,366 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:36704 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:31:46,377 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:31:46,379 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:36704 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:31:52,247 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:31:52,253 - app.core.middleware - INFO - Response: 200 - Time: 0.006s - Path: /api/v1/tools
+INFO:     127.0.0.1:36706 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:31:52,394 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:31:52,404 - app.core.middleware - INFO - Response: 200 - Time: 0.010s - Path: /api/v1/tools
+INFO:     127.0.0.1:36706 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:32:34,179 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:32:34,184 - app.core.middleware - INFO - Response: 200 - Time: 0.004s - Path: /api/v1/tools
+INFO:     127.0.0.1:49476 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:32:34,189 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:32:34,194 - app.core.middleware - INFO - Response: 200 - Time: 0.005s - Path: /api/v1/tools
+INFO:     127.0.0.1:49476 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:32:46,784 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:32:46,787 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:46270 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:32:46,798 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:32:46,801 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:46270 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:32:48,472 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:32:48,478 - app.core.middleware - INFO - Response: 200 - Time: 0.005s - Path: /api/v1/tools
+INFO:     127.0.0.1:46270 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:32:48,486 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:32:48,488 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:46270 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:33:43,806 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:33:43,809 - app.core.middleware - INFO - Response: 200 - Time: 0.003s - Path: /api/v1/tools
+INFO:     127.0.0.1:45104 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:33:43,873 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:33:43,874 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:45104 - "GET /api/v1/tools HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45118 - "OPTIONS /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:33:52,463 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:33:52,491 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:33:53,194 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:33:53,232 - app.core.middleware - INFO - Response: 200 - Time: 0.770s - Path: /api/v1/chat
+INFO:     127.0.0.1:45118 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:34:02,101 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 15:34:02,104 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 15:34:02,408 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:34:02,867 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-11-07 15:34:03,217 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 15:34:03,228 - app.core.middleware - INFO - Response: 200 - Time: 1.127s - Path: /api/v1/chat
+INFO:     127.0.0.1:56022 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 15:34:19,976 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:34:19,978 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:44826 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 15:34:19,983 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 15:34:19,985 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:44826 - "GET /api/v1/tools HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39324 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 17:08:43,838 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 17:08:43,900 - app.core.middleware - INFO - Response: 200 - Time: 0.066s - Path: /api/v1/tools
+INFO:     127.0.0.1:39324 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 17:08:43,905 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 17:08:43,907 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:39324 - "GET /api/v1/tools HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39324 - "OPTIONS /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 17:08:45,143 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-07 17:08:45,194 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-07 17:08:46,065 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 17:08:48,503 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-07 17:08:48,523 - app.core.middleware - INFO - Response: 200 - Time: 3.381s - Path: /api/v1/chat
+INFO:     127.0.0.1:39324 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-07 17:09:37,099 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 17:09:37,101 - app.core.middleware - INFO - Response: 200 - Time: 0.002s - Path: /api/v1/tools
+INFO:     127.0.0.1:51202 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-07 17:09:37,104 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-07 17:09:37,105 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:51202 - "GET /api/v1/tools HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [128284]

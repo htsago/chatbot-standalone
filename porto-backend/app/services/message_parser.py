@@ -177,7 +177,7 @@ class MessageParser:
                 if tool_schema_getter:
                     schema = tool_schema_getter(tool_base_name)
                     if schema:
-                        tool_call["schema"] = schema
+                        tool_call["tool_schema"] = schema
                 
                 tool_calls.append(tool_call)
         

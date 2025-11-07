@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { BotIcon } from './icons';
@@ -36,9 +37,9 @@ const Message: React.FC<MessageProps> = ({ message }) => {
   };
 
   return (
-    <div className={`flex gap-5 group ${isUser ? 'flex-row-reverse' : ''}`}>
-      <div className={`flex-1 ${isUser ? 'text-right' : ''}`}>
-        <div className={`inline-block max-w-[90%] md:max-w-[85%] relative group/message ${isUser ? 'text-right' : ''}`}>
+    <div className={`flex gap-4 group mb-4 justify-center`}>
+      <div className={`flex-1 max-w-3xl`}>
+        <div className={`relative group/message ${isUser ? 'text-right' : ''}`}>
           {isBot && message.text && (
             <button
               onClick={handleCopy}
@@ -57,13 +58,9 @@ const Message: React.FC<MessageProps> = ({ message }) => {
               )}
             </button>
           )}
-          <div className={`px-6 md:px-7 py-5 md:py-6 rounded-2xl transition-all ${
-            isUser 
-              ? 'bg-teal-600 text-white border border-teal-500 shadow-xl' 
-              : 'bg-gray-800 text-gray-100 border border-gray-700 shadow-xl hover:shadow-2xl hover:border-gray-600'
-          }`}>
+          <div className={`inline-block max-w-full px-5 md:px-6 py-4 md:py-5 rounded-xl transition-all bg-gradient-to-br from-gray-800/90 to-gray-900/90 ${isUser ? 'text-teal-100' : 'text-gray-100'} border border-gray-700/50 shadow-lg hover:shadow-xl hover:border-gray-600/50 backdrop-blur-sm ${isUser ? 'text-right ml-auto' : 'mr-auto'}`}>
           {message.isStreaming && (
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className={`flex items-center gap-1.5 mb-2 ${isUser ? 'justify-end' : ''}`}>
               <span className="inline-block w-2 h-2 bg-teal-400 rounded-full animate-pulse"></span>
               <span className="inline-block w-2 h-2 bg-teal-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></span>
               <span className="inline-block w-2 h-2 bg-teal-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></span>
@@ -71,47 +68,37 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           )}
           
           {message.text ? (
-            <div className="prose prose-invert max-w-none prose-sm prose-headings:font-semibold prose-p:leading-relaxed prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-1 prose-table:w-full prose-th:p-3 prose-td:p-3 prose-th:border prose-td:border prose-th:border-gray-600 prose-td:border-gray-600 prose-th:bg-gray-800/50 prose-th:font-semibold prose-th:text-gray-200 prose-td:text-gray-300 prose-a:text-teal-400 prose-a:no-underline hover:prose-a:text-teal-300 prose-strong:text-white prose-strong:font-semibold prose-em:text-gray-300 prose-blockquote:border-l-teal-500 prose-blockquote:text-gray-300 prose-hr:border-gray-600">
+            <div className={`prose prose-invert max-w-none prose-sm ${isUser ? 'text-right' : ''}`}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
                 components={{
                   p({ node, children, ...props }: any) {
-                    return <p className="my-3 leading-relaxed" {...props}>{children}</p>;
+                    return <p className={`my-2.5 leading-relaxed ${isUser ? 'text-teal-100' : 'text-gray-100'}`} {...props}>{children}</p>;
                   },
                   h1({ node, children, ...props }: any) {
-                    return <h1 className="text-2xl font-bold mt-6 mb-4 text-white" {...props}>{children}</h1>;
+                    return <h1 className={`text-xl font-medium mt-5 mb-3 ${isUser ? 'text-teal-50' : 'text-white'}`} {...props}>{children}</h1>;
                   },
                   h2({ node, children, ...props }: any) {
-                    return <h2 className="text-xl font-bold mt-5 mb-3 text-white" {...props}>{children}</h2>;
+                    return <h2 className={`text-lg font-medium mt-4 mb-2.5 ${isUser ? 'text-teal-50' : 'text-white'}`} {...props}>{children}</h2>;
                   },
                   h3({ node, children, ...props }: any) {
-                    return <h3 className="text-lg font-semibold mt-4 mb-2 text-white" {...props}>{children}</h3>;
+                    return <h3 className={`text-base font-medium mt-3.5 mb-2 ${isUser ? 'text-teal-50' : 'text-white'}`} {...props}>{children}</h3>;
                   },
                   h4({ node, children, ...props }: any) {
-                    return <h4 className="text-base font-semibold mt-3 mb-2 text-white" {...props}>{children}</h4>;
+                    return <h4 className={`text-sm font-medium mt-3 mb-1.5 ${isUser ? 'text-teal-50' : 'text-white'}`} {...props}>{children}</h4>;
                   },
                   h5({ node, children, ...props }: any) {
-                    return <h5 className="text-sm font-semibold mt-3 mb-1.5 text-white" {...props}>{children}</h5>;
+                    return <h5 className={`text-sm font-normal mt-2.5 mb-1 ${isUser ? 'text-teal-50' : 'text-white'}`} {...props}>{children}</h5>;
                   },
                   h6({ node, children, ...props }: any) {
-                    return <h6 className="text-xs font-semibold mt-2 mb-1 text-white" {...props}>{children}</h6>;
+                    return <h6 className={`text-xs font-normal mt-2 mb-1 ${isUser ? 'text-teal-50' : 'text-white'}`} {...props}>{children}</h6>;
                   },
                   ul({ node, children, ...props }: any) {
-                    // Calculate nesting depth by traversing up the tree
-                    let depth = 0;
-                    let parent = node?.parent;
-                    while (parent) {
-                      if (parent.type === 'listItem') {
-                        depth++;
-                      }
-                      parent = parent.parent;
-                    }
-                    const marginLeft = Math.min(depth * 1.5, 3); // rem units
-                    const markerClass = depth === 0 ? 'list-disc' : depth === 1 ? 'list-circle' : 'list-square';
                     return (
                       <ul 
-                        className={`${markerClass} list-outside my-2 space-y-1.5 pl-4`} 
-                        style={{ listStylePosition: 'outside', marginLeft: `${marginLeft}rem` }}
+                        className="list-disc list-inside my-3 space-y-2 ml-4"
+                        style={{ listStyleType: 'disc' }}
                         {...props}
                       >
                         {children}
@@ -119,20 +106,10 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                     );
                   },
                   ol({ node, children, ...props }: any) {
-                    // Calculate nesting depth by traversing up the tree
-                    let depth = 0;
-                    let parent = node?.parent;
-                    while (parent) {
-                      if (parent.type === 'listItem') {
-                        depth++;
-                      }
-                      parent = parent.parent;
-                    }
-                    const marginLeft = Math.min(depth * 1.5, 3); // rem units
                     return (
                       <ol 
-                        className={`list-decimal list-outside my-2 space-y-1.5 pl-4`}
-                        style={{ listStylePosition: 'outside', marginLeft: `${marginLeft}rem` }}
+                        className="list-decimal list-inside my-3 space-y-2 ml-4"
+                        style={{ listStyleType: 'decimal' }}
                         {...props}
                       >
                         {children}
@@ -140,13 +117,12 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                     );
                   },
                   li({ node, children, ...props }: any) {
-                    // Check if this is a task list item by looking for checkbox input in children
                     const hasCheckbox = React.Children.toArray(children).some((child: any) => 
                       child?.props?.type === 'checkbox'
                     );
                     
                     return (
-                      <li className={`my-1.5 leading-relaxed ${hasCheckbox ? 'list-none flex items-start' : ''} pl-2`} style={{ display: 'list-item' }} {...props}>
+                      <li className={`leading-relaxed ${hasCheckbox ? 'list-none flex items-start' : ''}`} {...props}>
                         {children}
                       </li>
                     );
@@ -167,7 +143,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                     return <input {...props} />;
                   },
                   blockquote({ node, children, ...props }: any) {
-                    return <blockquote className="border-l-4 border-teal-500 pl-4 my-4 italic text-gray-300 bg-gray-800/30 py-2 rounded-r" {...props}>{children}</blockquote>;
+                    return <blockquote className={`border-l-4 border-teal-500 pl-4 my-4 italic ${isUser ? 'text-teal-200' : 'text-gray-300'} bg-gray-800/30 py-2 rounded-r`} {...props}>{children}</blockquote>;
                   },
                   hr({ node, ...props }: any) {
                     return <hr className="my-6 border-gray-600" {...props} />;
@@ -186,10 +162,10 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                     );
                   },
                   strong({ node, children, ...props }: any) {
-                    return <strong className="font-semibold text-teal-300" {...props}>{children}</strong>;
+                    return <strong className={`font-medium ${isUser ? 'text-teal-300' : 'text-teal-300'}`} {...props}>{children}</strong>;
                   },
                   em({ node, children, ...props }: any) {
-                    return <em className="italic text-gray-300" {...props}>{children}</em>;
+                    return <em className={`italic ${isUser ? 'text-teal-200' : 'text-gray-300'}`} {...props}>{children}</em>;
                   },
                   del({ node, children, ...props }: any) {
                     return <del className="line-through text-gray-500" {...props}>{children}</del>;
@@ -240,7 +216,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                           </div>
                           {match && (
                             <div className="absolute top-2 left-2 z-10">
-                              <span className="px-2 py-1 bg-gray-800/90 border border-gray-600/50 rounded text-xs font-mono font-semibold text-gray-400 uppercase tracking-wider">
+                              <span className="px-2 py-1 bg-gray-800/90 border border-gray-600/50 rounded text-xs font-mono font-medium text-gray-400 uppercase tracking-wider">
                                 {match[1]}
                               </span>
                             </div>
@@ -302,7 +278,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                     return <tr className="hover:bg-gray-700/30 transition-colors" {...props} />;
                   },
                   th({ node, ...props }: any) {
-                    return <th className="px-4 py-3 text-left text-xs font-semibold text-gray-200 uppercase tracking-wider border-b border-gray-600" {...props} />;
+                    return <th className="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider border-b border-gray-600" {...props} />;
                   },
                   td({ node, ...props }: any) {
                     return <td className="px-4 py-3 text-sm text-gray-300 border-b border-gray-600/50" {...props} />;
@@ -326,8 +302,8 @@ const Message: React.FC<MessageProps> = ({ message }) => {
         </div>
         
         {isBot && message.toolCalls !== undefined && (
-          <div className={`mt-3 ${isUser ? 'text-right' : ''}`}>
-            <div className={`inline-block max-w-[90%] md:max-w-[85%] bg-gray-700/70 border border-gray-600/70 px-6 md:px-7 py-4 md:py-5 rounded-2xl shadow-xl backdrop-blur-sm`}>
+          <div className={`mt-3 flex justify-center`}>
+            <div className={`w-full max-w-3xl bg-gradient-to-br from-gray-700/80 to-gray-800/80 border border-gray-600/50 px-5 md:px-6 py-3.5 md:py-4 rounded-xl shadow-lg backdrop-blur-sm hover:border-gray-500/50 transition-colors`}>
               <button
                 onClick={() => setIsToolCallsExpanded(!isToolCallsExpanded)}
                 className="w-full flex items-center justify-between group py-1.5 hover:bg-gray-600/30 active:bg-gray-600/40 rounded-lg px-1 -mx-1 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-500/50"
@@ -335,7 +311,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
               >
                 <div className="flex items-center gap-2.5">
                   <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
-                  <span className="text-sm font-semibold text-gray-300 group-hover:text-gray-200 transition-colors">
+                  <span className="text-sm font-medium text-gray-300 group-hover:text-gray-200 transition-colors">
                     {message.toolCalls && message.toolCalls.length > 0 
                       ? `${message.toolCalls.length} ${message.toolCalls.length === 1 ? 'Tool Call' : 'Tool Calls'}`
                       : '0 Tool Calls'}
@@ -359,10 +335,10 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                       const hasLinks = Array.isArray(links) && links.length > 0;
                       
                       return (
-                        <div key={index} className={`bg-gray-800/40 p-4 rounded-xl border border-gray-700/50 shadow-md animate-slide-up`} style={{ animationDelay: `${index * 50}ms` }}>
-                          <div className="flex items-center gap-2.5 mb-3">
+                        <div key={index} className={`bg-gray-800/40 p-3.5 rounded-lg border border-gray-700/50 shadow-sm animate-slide-up`} style={{ animationDelay: `${index * 50}ms` }}>
+                          <div className="flex items-center gap-2.5 mb-2.5">
                             <div className="w-1 h-1 bg-teal-400"></div>
-                            <span className="text-sm font-mono font-semibold text-teal-400">
+                            <span className="text-sm font-mono font-medium text-teal-400">
                               {toolCall.name}
                             </span>
                           </div>
@@ -378,7 +354,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                           {/* Display links if available */}
                           {hasLinks && (
                             <div className="mt-3 mb-3">
-                              <div className="text-sm text-gray-400 mb-3 font-semibold flex items-center gap-2">
+                              <div className="text-sm text-gray-400 mb-2.5 font-medium flex items-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                 </svg>
@@ -391,7 +367,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                                     href={link.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="block bg-gray-900/60 hover:bg-gray-900/80 active:bg-gray-900 p-3 border border-gray-700/30 rounded-lg transition-all duration-200 group shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500/50"
+                                    className="block bg-gray-900/60 hover:bg-gray-900/80 active:bg-gray-900 p-2.5 border border-gray-700/30 rounded-lg transition-all duration-200 group shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500/50"
                                   >
                                     <div className="flex items-start gap-2">
                                       <svg
@@ -408,7 +384,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                                         />
                                       </svg>
                                       <div className="flex-1 min-w-0">
-                                        <div className="text-sm text-teal-300 group-hover:text-teal-200 font-medium truncate">
+                                        <div className="text-sm text-teal-300 group-hover:text-teal-200 font-normal truncate">
                                           {link.title || link.url}
                                         </div>
                                         <div className="text-xs text-gray-400 truncate mt-0.5">
@@ -437,8 +413,8 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                           
                           {/* Display parameters in a structured way */}
                           {toolCall.args && Object.keys(toolCall.args).filter(key => key !== 'links').length > 0 && (
-                            <div className={`mt-3 bg-gray-900/60 p-4 border border-gray-700/30 rounded-lg ${hasLinks ? 'border-t-0' : ''}`}>
-                              <div className="text-sm text-gray-400 mb-3 font-semibold flex items-center gap-2">
+                            <div className={`mt-2.5 bg-gray-900/60 p-3.5 border border-gray-700/30 rounded-lg ${hasLinks ? 'border-t-0' : ''}`}>
+                              <div className="text-sm text-gray-400 mb-2.5 font-medium flex items-center gap-2">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
@@ -456,9 +432,9 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                                     const isRequired = toolCall.schema?.required?.includes(key);
                                     
                                     return (
-                                      <div key={key} className="flex gap-3 text-sm p-2.5 bg-gray-800/40 rounded-lg border border-gray-700/20">
+                                      <div key={key} className="flex gap-3 text-sm p-2 bg-gray-800/40 rounded-lg border border-gray-700/20">
                                         <div className="flex-shrink-0">
-                                          <span className="text-teal-300/90 font-mono font-semibold">
+                                          <span className="text-teal-300/90 font-mono font-medium">
                                             {key}
                                             {isRequired && <span className="text-red-400 ml-1">*</span>}:
                                           </span>

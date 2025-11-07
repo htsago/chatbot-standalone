@@ -26,15 +26,26 @@ class VectorStoreService:
             docs = loader.load()
             embeddings = OpenAIEmbeddings()
 
-            if os.path.exists(INDEX_PATH):
+            index_faiss_path = os.path.join(INDEX_PATH, "index.faiss")
+            index_pkl_path = os.path.join(INDEX_PATH, "index.pkl")
+            
+            if os.path.exists(index_faiss_path) and os.path.exists(index_pkl_path):
                 logger.info(f"Loading existing vector store from {INDEX_PATH}")
-                return FAISS.load_local(
-                    embeddings=embeddings, 
-                    folder_path=INDEX_PATH, 
-                    allow_dangerous_deserialization=True
-                )
+                try:
+                    return FAISS.load_local(
+                        embeddings=embeddings, 
+                        folder_path=INDEX_PATH, 
+                        allow_dangerous_deserialization=True
+                    )
+                except Exception as load_error:
+                    logger.warning(f"Failed to load existing vector store: {load_error}. Creating new one.")
+                    vector_store = FAISS.from_documents(docs, embeddings)
+                    vector_store.save_local(folder_path=INDEX_PATH)
+                    return vector_store
             else:
                 logger.info("Creating new vector store")
+                if not os.path.exists(INDEX_PATH):
+                    os.makedirs(INDEX_PATH, exist_ok=True)
                 vector_store = FAISS.from_documents(docs, embeddings)
                 vector_store.save_local(folder_path=INDEX_PATH)
                 return vector_store

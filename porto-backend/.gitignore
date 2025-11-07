@@ -142,3 +142,6 @@ codex-db/
 # Temporary files
 *.tmp
 *.temp
+
+# Gmail OAuth token
+gmail_token.json

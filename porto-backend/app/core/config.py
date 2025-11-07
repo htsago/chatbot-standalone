@@ -33,13 +33,3 @@ def set_llm_service(service: LLMService):
     """Set LLM service instance (useful for testing)."""
     global _llm_service
     _llm_service = service
-
-
-llm_service = None
-
-
-def __getattr__(name: str):
-    """Lazy initialization for backward compatibility."""
-    if name == "llm_service":
-        return get_llm_service()
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

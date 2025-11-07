@@ -315,3 +315,225 @@ pre code {
   list-style-type: lower-roman;
 }
 
+/* Prism.js custom styling for dark theme */
+pre[class*="language-"] {
+  background: #1e293b !important;
+  border: 1px solid rgba(75, 85, 99, 0.3) !important;
+}
+
+code[class*="language-"] {
+  color: #e2e8f0 !important;
+  text-shadow: none !important;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #7dd3fc !important;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #86efac !important;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #fbbf24 !important;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #c084fc !important;
+}
+
+.token.function,
+.token.class-name {
+  color: #60a5fa !important;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #64748b !important;
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: #cbd5e1 !important;
+}
+
+/* Email HTML Preview Styling - MS Word Style */
+.email-preview {
+  color: #e5e7eb;
+  font-family: 'Calibri', Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.15;
+}
+
+.email-preview p {
+  margin: 10pt 0;
+  line-height: 1.15;
+  font-family: 'Calibri', Arial, sans-serif;
+  font-size: 11pt;
+}
+
+.email-preview p:first-child {
+  margin-top: 0;
+}
+
+.email-preview p:last-child {
+  margin-bottom: 0;
+}
+
+.email-preview strong,
+.email-preview b {
+  font-weight: 600;
+  color: #5eead4;
+}
+
+.email-preview em,
+.email-preview i {
+  font-style: italic;
+  color: #d1d5db;
+}
+
+.email-preview ul,
+.email-preview ol {
+  margin: 10pt 0;
+  padding-left: 1.5rem;
+  font-family: 'Calibri', Arial, sans-serif;
+  font-size: 11pt;
+}
+
+.email-preview ul {
+  list-style-type: disc;
+}
+
+.email-preview ol {
+  list-style-type: decimal;
+}
+
+.email-preview li {
+  margin: 0.25rem 0;
+  line-height: 1.15;
+  font-family: 'Calibri', Arial, sans-serif;
+  font-size: 11pt;
+}
+
+.email-preview a {
+  color: #5eead4;
+  text-decoration: underline;
+  text-decoration-color: rgba(94, 234, 212, 0.3);
+}
+
+.email-preview a:hover {
+  color: #2dd4bf;
+  text-decoration-color: rgba(45, 212, 191, 0.5);
+}
+
+.email-preview h1,
+.email-preview h2,
+.email-preview h3,
+.email-preview h4,
+.email-preview h5,
+.email-preview h6 {
+  margin: 12pt 0 6pt 0;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #f3f4f6;
+  font-family: 'Calibri', Arial, sans-serif;
+}
+
+.email-preview h1 {
+  font-size: 16pt;
+}
+
+.email-preview h2 {
+  font-size: 14pt;
+}
+
+.email-preview h3 {
+  font-size: 12pt;
+}
+
+.email-preview h4,
+.email-preview h5,
+.email-preview h6 {
+  font-size: 11pt;
+}
+
+.email-preview hr {
+  border: none;
+  border-top: 1px solid rgba(75, 85, 99, 0.5);
+  margin: 1rem 0;
+}
+
+.email-preview blockquote {
+  border-left: 3px solid #14b8a6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #d1d5db;
+  font-style: italic;
+}
+
+.email-preview code {
+  background-color: rgba(20, 184, 166, 0.15);
+  color: #5eead4;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.email-preview pre {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+.email-preview pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.email-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.email-preview table th,
+.email-preview table td {
+  padding: 0.5rem;
+  border: 1px solid rgba(75, 85, 99, 0.5);
+}
+
+.email-preview table th {
+  background-color: rgba(31, 41, 55, 0.7);
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.email-preview table td {
+  background-color: rgba(31, 41, 55, 0.3);
+  color: #d1d5db;
+}
+
