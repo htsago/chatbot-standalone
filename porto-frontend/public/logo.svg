@@ -1,0 +1,31 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modern, clean AI/Portfolio icon -->
+  <rect x="4" y="4" width="24" height="24" rx="4" fill="url(#bgGradient)" />
+  
+  <!-- P letter for Portfolio -->
+  <path
+    d="M10 8 L10 24 M10 8 L16 8 C19.314 8 22 10.686 22 14 C22 17.314 19.314 20 16 20 L10 20"
+    stroke="url(#strokeGradient)"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+  
+  <!-- AI sparkle dots -->
+  <circle cx="20" cy="10" r="1.5" fill="#a78bfa" />
+  <circle cx="24" cy="14" r="1" fill="#a78bfa" />
+  <circle cx="22" cy="18" r="1.2" fill="#a78bfa" />
+  
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.1" />
+    </linearGradient>
+    <linearGradient id="strokeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14b8a6" />
+      <stop offset="100%" stop-color="#5eead4" />
+    </linearGradient>
+  </defs>
+</svg>
+

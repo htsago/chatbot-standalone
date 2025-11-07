@@ -1,0 +1,104 @@
+{
+  "portfolio-faq": [
+    {
+      "question": "Wer ist Herman Tsago?",
+      "answer": "Herman Tsago ist ein AI Engineer und Masterstudent mit soliden DevOps-Grundlagen und KI-Entwicklung. [Mehr über mich erfahren](https://www.herman-tsago.tech/competences)",
+      "category": "about"
+    },
+    {
+      "question": "Was sind Herman Tsagos Hauptkompetenzen?",
+      "answer": "Herman Tsago ist spezialisiert auf Python Development, AI Engineering und Machine Learning. [Alle Skills ansehen](https://www.herman-tsago.tech/competences)",
+      "category": "skills"
+    },
+    {
+      "question": "Wo arbeitet Herman Tsago aktuell?",
+      "answer": "Herman Tsago arbeitet seit Januar 2025 als Machine Learning Engineer LLM Werkstudent bei Dataport AÖR in Altenholz. [Vollständigen Lebenslauf ansehen](https://www.herman-tsago.tech/parcours)",
+      "category": "work"
+    },
+    {
+      "question": "Welche Berufserfahrungen hat Herman Tsago?",
+      "answer": "Herman Tsago hat als Machine Learning Engineer, Python Developer und Werkstudent in mehreren Unternehmen gearbeitet, darunter Dataport AÖR, hmmh AG und Pumacy Technologies AG. [Vollständigen Lebenslauf ansehen](https://www.herman-tsago.tech/parcours)",
+      "category": "work"
+    },
+    {
+      "question": "Welche Ausbildung hat Herman Tsago?",
+      "answer": "Herman Tsago studiert derzeit einen Master in Informatik (Trustworthy Systems) an der Hochschule Bremerhaven und hat einen Bachelor in Wirtschaftsinformatik abgeschlossen. [Vollständigen Lebenslauf ansehen](https://www.herman-tsago.tech/parcours)",
+      "category": "education"
+    },
+    {
+      "question": "Welche Projekte hat Herman Tsago entwickelt?",
+      "answer": "Herman Tsago hat mehrere innovative Projekte entwickelt, darunter SmartAgentAI, codex-chatbot, Paiya.ai und viele weitere. [Alle Projekte ansehen](https://www.herman-tsago.tech/projets)",
+      "category": "projects"
+    },
+    {
+      "question": "Wie kann ich Herman Tsago kontaktieren?",
+      "answer": "Herman Tsago kann über E-Mail (hermantsago67@gmail.com), GitHub oder LinkedIn kontaktiert werden. [Kontaktseite besuchen](https://www.herman-tsago.tech/contact)",
+      "category": "contact"
+    },
+    {
+      "question": "Was ist SmartAgentAI?",
+      "answer": "SmartAgentAI ist eine sichere KI-Anwendung für den Bildungssektor mit Security by Design. [Projekt ansehen](https://www.herman-tsago.tech/projets)",
+      "category": "projects"
+    },
+    {
+      "question": "Welche Programmiersprachen beherrscht Herman Tsago?",
+      "answer": "Herman Tsago beherrscht Python, JavaScript, HTML, CSS und SQL. [Alle Skills ansehen](https://www.herman-tsago.tech/competences)",
+      "category": "skills"
+    },
+    {
+      "question": "Welches freiwillige Engagement hat Herman Tsago?",
+      "answer": "Herman Tsago engagiert sich seit Juni 2025 als Community Builder bei Codex und seit Oktober 2024 im Projekt 'Balu und Du' bei der Freiwilligen-Agentur Bremen. [Vollständigen Lebenslauf ansehen](https://www.herman-tsago.tech/parcours)",
+      "category": "volunteer"
+    },
+    {
+      "question": "Was sind Herman Tsagos technische Skills?",
+      "answer": "Herman Tsago verfügt über umfassende Kenntnisse in Machine Learning, Deep Learning, Natural Language Processing, Cloud Computing und DevOps-Praktiken. [Alle Skills ansehen](https://www.herman-tsago.tech/competences)",
+      "category": "skills"
+    },
+    {
+      "question": "Welche Frameworks und Tools nutzt Herman Tsago?",
+      "answer": "Herman Tsago arbeitet mit TensorFlow, PyTorch, Scikit-learn, Docker, Kubernetes, Git, Jupyter Notebooks und verschiedenen Cloud-Plattformen. [Alle Skills ansehen](https://www.herman-tsago.tech/competences)",
+      "category": "skills"
+    },
+    {
+      "question": "Was ist codex-chatbot?",
+      "answer": "codex-chatbot ist ein intelligenter Chatbot, der mit modernen KI-Technologien entwickelt wurde und natürliche Gespräche ermöglicht. [Projekt ansehen](https://www.herman-tsago.tech/projets)",
+      "category": "projects"
+    },
+    {
+      "question": "Was ist Paiya.ai?",
+      "answer": "Paiya.ai ist eine innovative KI-Anwendung, die intelligente Lösungen für verschiedene Anwendungsbereiche bietet. [Projekt ansehen](https://www.herman-tsago.tech/projets)",
+      "category": "projects"
+    },
+    {
+      "question": "Welche Zertifikate hat Herman Tsago?",
+      "answer": "Herman Tsago hat verschiedene Zertifikate in AI Engineering, Machine Learning und Cloud Computing erworben. [Alle Zertifikate ansehen](https://www.herman-tsago.tech/zertifikat)",
+      "category": "certificates"
+    },
+    {
+      "question": "Was ist Herman Tsagos Spezialisierung?",
+      "answer": "Herman Tsago spezialisiert sich auf die Entwicklung von KI-Systemen, Machine Learning Engineering und die Implementierung von DevOps-Praktiken in KI-Projekten. [Mehr über mich erfahren](https://www.herman-tsago.tech/competences)",
+      "category": "about"
+    },
+    {
+      "question": "Welche Cloud-Plattformen kennt Herman Tsago?",
+      "answer": "Herman Tsago hat Erfahrung mit AWS, Google Cloud Platform und Microsoft Azure für die Bereitstellung und Skalierung von KI-Anwendungen. [Alle Skills ansehen](https://www.herman-tsago.tech/competences)",
+      "category": "skills"
+    },
+    {
+      "question": "Was sind Herman Tsagos Interessen?",
+      "answer": "Herman Tsago interessiert sich für künstliche Intelligenz, Machine Learning, DevOps, Open Source Software und die Entwicklung nachhaltiger Technologielösungen. [Mehr über mich erfahren](https://www.herman-tsago.tech/competences)",
+      "category": "about"
+    },
+    {
+      "question": "Welche Sprachen spricht Herman Tsago?",
+      "answer": "Herman Tsago spricht Deutsch (Muttersprache), Englisch (fließend) und Französisch (Grundkenntnisse). [Mehr über mich erfahren](https://www.herman-tsago.tech/competences)",
+      "category": "about"
+    },
+    {
+      "question": "Wo kann ich Herman Tsagos Code sehen?",
+      "answer": "Herman Tsagos Code und Projekte sind auf GitHub verfügbar. [GitHub-Profil besuchen](https://github.com/htsago) oder [Alle Projekte ansehen](https://www.herman-tsago.tech/projets)",
+      "category": "projects"
+    }
+  ]
+}

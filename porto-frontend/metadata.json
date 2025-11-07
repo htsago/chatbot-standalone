@@ -1,0 +1,5 @@
+{
+  "name": "Portfolio AI Assistant",
+  "description": "A conversational AI assistant for portfolio information. Ask questions about projects, experience, skills, and more through a sleek chat interface.",
+  "requestFramePermissions": []
+}

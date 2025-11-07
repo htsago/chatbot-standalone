@@ -1,0 +1,21 @@
+
+> portfolio-ai-assistant@0.0.0 dev
+> vite
+
+
+  VITE v6.4.1  ready in 824 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.1.158:5173/
+09:26:27 [vite] changed tsconfig file detected: /home/htsago/Dokumente/chatbot-standalone/porto-frontend/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+09:26:28 [vite] (client) page reload index.html
+09:26:28 [vite] (client) hmr update /components/Toast.tsx
+09:26:30 [vite] (client) hmr update /components/TabsSidebar.tsx
+09:26:31 [vite] (client) hmr update /index.css?direct
+09:26:31 [vite] (client) hmr update /components/MessageInput.tsx
+09:26:34 [vite] (client) hmr update /App.tsx, /components/ToolsSidebar.tsx
+09:26:35 [vite] (client) hmr update /components/Message.tsx
+09:26:36 [vite] (client) hmr update /App.tsx
+09:26:36 [vite] (client) hmr update /components/icons.tsx
+09:26:37 [vite] (client) hmr update /components/ToolsAvatar.tsx
+09:26:37 [vite] (client) hmr update /components/ToolsSidebar.tsx

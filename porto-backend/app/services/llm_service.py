@@ -1,0 +1,111 @@
+import logging
+import uuid
+from typing import Optional
+
+from langchain.agents import create_agent
+from langchain_groq import ChatGroq
+from langgraph.checkpoint.memory import InMemorySaver
+from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+
+from app.core.prompts import SYSTEM_PROMPT
+from app.core.constants import DEFAULT_MODEL, DEFAULT_TEMPERATURE
+from app.core.exceptions import LLMServiceError
+from app.services.tool_manager import ToolManager
+from app.services.vector_store_service import VectorStoreService
+from app.services.message_parser import MessageParser
+
+load_dotenv()
+logger = logging.getLogger(__name__)
+
+
+class Context(BaseModel):
+    """Context schema for agent conversations."""
+    user_id: Optional[str] = Field(default=None, description="User identifier")
+    session_id: Optional[str] = Field(default=None, description="Session identifier")
+
+
+class LLMService:
+    """Service for LLM agent interactions."""
+    
+    def __init__(self):
+        """Initialize LLM service with vector store, tools, and agent."""
+        try:
+            self.vector_store = VectorStoreService.initialize()
+            self.tool_manager = ToolManager()
+            self.tool_manager.set_vector_store(self.vector_store)
+            
+            self.llm = ChatGroq(model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE)
+            self.checkpointer = InMemorySaver()
+            self.message_parser = MessageParser()
+            self.agent = self._create_agent()
+            logger.info("LLM service initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing LLM service: {str(e)}")
+            raise LLMServiceError(f"Failed to initialize LLM service: {str(e)}") from e
+
+    def _create_agent(self):
+        """Create LangChain agent with tools."""
+        try:
+            tools = self.tool_manager.create_langchain_tools()
+            agent = create_agent(
+                model=self.llm,
+                tools=tools,
+                context_schema=Context,
+                system_prompt=SYSTEM_PROMPT,
+                checkpointer=self.checkpointer
+            )
+            logger.info(f"Agent created successfully with {len(tools)} tools")
+            return agent
+        except Exception as e:
+            logger.error(f"Error creating agent: {str(e)}")
+            raise LLMServiceError(f"Failed to create agent: {str(e)}") from e
+
+    @staticmethod
+    def _get_or_create_thread_id(thread_id: Optional[str] = None) -> str:
+        """Get existing thread ID or create a new one."""
+        return thread_id if thread_id else str(uuid.uuid4())
+
+    def _get_messages_before_count(self, config: dict) -> int:
+        """Get the number of messages before current invocation."""
+        try:
+            state = self.checkpointer.get(config)
+            if isinstance(state, dict):
+                return len(state.get("channel_values", {}).get("messages", []))
+        except Exception:
+            pass
+        return 0
+
+    def invoke(self, query: str, thread_id: Optional[str] = None) -> tuple[str, str, list[dict]]:
+        """
+        Invoke the agent with a query.
+        
+        Args:
+            query: User query string
+            thread_id: Optional thread ID for conversation continuity
+            
+        Returns:
+            Tuple of (answer, thread_id, tool_calls)
+        """
+        try:
+            thread_id = self._get_or_create_thread_id(thread_id)
+            config = {"configurable": {"thread_id": thread_id}}
+            
+            messages_before = self._get_messages_before_count(config)
+            
+            result = self.agent.invoke(
+                {"messages": [{"role": "user", "content": query}]},
+                config=config
+            )
+            
+            answer = self.message_parser.extract_message_content(result)
+            tool_calls = self.message_parser.extract_tool_calls(
+                result,
+                messages_before,
+                tool_schema_getter=self.tool_manager.get_tool_schema
+            )
+            
+            return answer, thread_id, tool_calls
+        except Exception as e:
+            logger.error(f"Error invoking agent: {str(e)}")
+            raise LLMServiceError(f"Failed to process query: {str(e)}") from e
