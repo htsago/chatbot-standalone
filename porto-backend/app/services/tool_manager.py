@@ -198,7 +198,12 @@ class ToolManager:
         gmail_service = self._get_gmail_service()
         
         if not gmail_service.client_id or not gmail_service.client_secret:
-            return "Error: Google Cloud credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET."
+            error_msg = (
+                "FEHLER: Google Cloud Credentials nicht konfiguriert. "
+                "Bitte setzen Sie die Umgebungsvariablen GOOGLE_CLIENT_ID und GOOGLE_CLIENT_SECRET."
+            )
+            logger.error(error_msg)
+            return error_msg
         
         if not gmail_service.is_authenticated():
             redirect_uri = get_gmail_redirect_uri()
@@ -206,10 +211,14 @@ class ToolManager:
             if auth_url:
                 return self._format_auth_required_message(sender_email, auth_url)
             else:
-                return (
-                    f"Gmail-Authentifizierung erforderlich: Das Gmail-Konto {sender_email} "
-                    f"muss zuerst authentifiziert werden. Bitte kontaktiere den Administrator."
+                error_msg = (
+                    f"FEHLER: Gmail-Authentifizierung erforderlich. "
+                    f"Das Gmail-Konto {sender_email} muss zuerst authentifiziert werden. "
+                    f"Die gmail_token.json Datei fehlt oder ist ungültig. "
+                    f"Bitte kontaktiere den Administrator oder verwende den Authentifizierungs-Endpunkt."
                 )
+                logger.error(error_msg)
+                return error_msg
         
         try:
             result = gmail_service.send_email(
@@ -217,10 +226,13 @@ class ToolManager:
             )
             return result
         except ToolError as e:
-            return f"Error: {str(e)}"
+            error_msg = f"FEHLER: {str(e)}"
+            logger.error(error_msg)
+            return error_msg
         except Exception as e:
-            logger.error(f"Error sending email: {e}")
-            return f"Error sending email: {str(e)}"
+            error_msg = f"FEHLER beim Senden der E-Mail: {str(e)}"
+            logger.error(error_msg, exc_info=True)
+            return error_msg
 
     def get_all_tools(self) -> list[dict]:
         """Get all available tools with their schemas."""

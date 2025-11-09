@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 
 from app.core.exceptions import ToolError
 
-# Load .env file from porto-backend directory
 env_path = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     ".env"
@@ -45,7 +44,9 @@ class GmailService:
                 with open(TOKEN_FILE, 'r') as f:
                     return json.load(f)
             except Exception as e:
-                logger.error(f"Error loading token: {e}")
+                logger.error(f"Error loading token from {TOKEN_FILE}: {e}")
+        else:
+            logger.warning(f"Gmail token file not found at {TOKEN_FILE}. Gmail authentication required.")
         return None
     
     def _save_token(self, token: dict):
@@ -59,6 +60,7 @@ class GmailService:
     def _get_credentials(self):
         """Get valid OAuth2 credentials."""
         if not self.client_id or not self.client_secret:
+            logger.warning("Google Cloud credentials (GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET) not configured")
             return None
         
         try:
@@ -66,18 +68,28 @@ class GmailService:
             from google.auth.transport.requests import Request
             
             token = self._load_token()
-            if token:
-                self.credentials = Credentials.from_authorized_user_info(token, SCOPES)
+            if not token:
+                logger.warning("No Gmail token found. Authentication required.")
+                return None
                 
-                if self.credentials and self.credentials.valid:
-                    return self.credentials
-                
-                if self.credentials and self.credentials.expired and self.credentials.refresh_token:
+            self.credentials = Credentials.from_authorized_user_info(token, SCOPES)
+            
+            if self.credentials and self.credentials.valid:
+                return self.credentials
+            
+            if self.credentials and self.credentials.expired and self.credentials.refresh_token:
+                try:
                     self.credentials.refresh(Request())
                     self._save_token(self._serialize_credentials(self.credentials))
                     return self.credentials
+                except Exception as e:
+                    logger.error(f"Error refreshing credentials: {e}")
+                    return None
+            else:
+                logger.warning("Gmail credentials expired and no refresh token available. Re-authentication required.")
+                return None
         except ImportError:
-            logger.warning("Google API libraries not installed")
+            logger.error("Google API libraries not installed. Install with: pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client")
         except Exception as e:
             logger.error(f"Error getting credentials: {e}")
         
@@ -86,19 +98,47 @@ class GmailService:
     def _get_service(self):
         """Get Gmail API service instance."""
         if self.service:
-            return self.service
+     
+            if not os.path.exists(TOKEN_FILE):
+                logger.warning(f"Token file {TOKEN_FILE} was deleted. Resetting cached service.")
+                self.service = None
+                self.credentials = None
+            else:
+                try:
+                    if self.credentials and not self.credentials.valid:
+                        if self.credentials.expired and self.credentials.refresh_token:
+                            try:
+                                from google.auth.transport.requests import Request
+                                self.credentials.refresh(Request())
+                                self._save_token(self._serialize_credentials(self.credentials))
+                            except Exception as e:
+                                logger.warning(f"Could not refresh credentials: {e}. Resetting service.")
+                                self.service = None
+                                self.credentials = None
+                        else:
+                            logger.warning("Credentials expired and cannot be refreshed. Resetting service.")
+                            self.service = None
+                            self.credentials = None
+                except Exception as e:
+                    logger.warning(f"Error validating cached credentials: {e}. Resetting service.")
+                    self.service = None
+                    self.credentials = None
         
-        credentials = self._get_credentials()
-        if not credentials:
-            return None
+        if not self.service:
+            credentials = self._get_credentials()
+            if not credentials:
+                logger.warning("Cannot create Gmail service: No valid credentials available")
+                return None
+            
+            try:
+                from googleapiclient.discovery import build
+                self.service = build('gmail', 'v1', credentials=credentials)
+                return self.service
+            except Exception as e:
+                logger.error(f"Error building Gmail service: {e}")
+                return None
         
-        try:
-            from googleapiclient.discovery import build
-            self.service = build('gmail', 'v1', credentials=credentials)
-            return self.service
-        except Exception as e:
-            logger.error(f"Error building Gmail service: {e}")
-            return None
+        return self.service
     
     def is_authenticated(self) -> bool:
         """Check if Gmail service is authenticated."""
@@ -178,7 +218,13 @@ class GmailService:
         """Send email via Gmail API."""
         service = self._get_service()
         if not service:
-            raise ToolError("Gmail service not authenticated. Please authenticate first.")
+            error_msg = (
+                "FEHLER: Gmail-Service ist nicht authentifiziert. "
+                "Die gmail_token.json Datei fehlt oder ist ungültig. "
+                "Bitte authentifizieren Sie sich zuerst über den Gmail-Authentifizierungs-Endpunkt."
+            )
+            logger.error(error_msg)
+            raise ToolError(error_msg)
         
         try:
             msg = MIMEMultipart()
@@ -201,8 +247,12 @@ class GmailService:
             ).execute()
             
             message_id = message_obj.get('id')
+            logger.info(f"Email sent successfully. Message ID: {message_id}")
             return f"Email sent successfully! Message ID: {message_id}"
+        except ToolError:
+            raise
         except Exception as e:
-            logger.error(f"Error sending email: {e}")
-            raise ToolError(f"Error sending email: {str(e)}") from e
+            error_msg = f"FEHLER beim Senden der E-Mail: {str(e)}"
+            logger.error(error_msg, exc_info=True)
+            raise ToolError(error_msg) from e
 

@@ -20,10 +20,9 @@ FROM python:3.11-slim
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/app
 
-# Install runtime dependencies including gosu for user switching
+# Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    gosu \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Python packages from builder
@@ -33,21 +32,13 @@ COPY --from=builder /usr/local /usr/local
 COPY app/ ./app/
 COPY data/ ./data/
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
 # Create directories for database
 RUN mkdir -p /app/portfolio-db
 
-# Create non-root user with specific UID/GID to match host permissions
-RUN groupadd -r -g 1000 appuser && useradd -r -u 1000 -g appuser appuser
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN chown -R appuser:appuser /app
-RUN chmod -R 755 /app/portfolio-db
-# Note: We don't set USER here - entrypoint will switch to appuser after fixing permissions
-
-# Set entrypoint
-ENTRYPOINT ["/docker-entrypoint.sh"]
+USER appuser
 
 EXPOSE 8090
 
