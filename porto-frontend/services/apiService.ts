@@ -1,10 +1,6 @@
 import { type Message } from '../types';
 
-// Use environment variable if set, otherwise use relative path for production or localhost for development
-// In production with Nginx, set VITE_API_BASE_URL to empty string or '/api' to use relative paths
-// For local development, leave unset to use 'http://localhost:8090'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
-  (import.meta.env.PROD ? '' : 'http://localhost:8090');
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8090';
 
 interface ChatRequest {
   message: string;

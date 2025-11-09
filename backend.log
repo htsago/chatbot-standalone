@@ -1,35 +1,66 @@
-INFO:     Started server process [15033]
+INFO:     Started server process [226868]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8090 (Press CTRL+C to quit)
-INFO:     127.0.0.1:50494 - "OPTIONS /api/v1/tools HTTP/1.1" 200 OK
-2025-11-09 14:52:19,923 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
-2025-11-09 14:52:20,600 - app.services.vector_store_service - INFO - Loading existing vector store from portfolio-db
-2025-11-09 14:52:20,604 - faiss.loader - INFO - Loading faiss with AVX2 support.
-2025-11-09 14:52:20,793 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
-2025-11-09 14:52:20,990 - app.services.llm_service - INFO - Agent created successfully with 5 tools
-2025-11-09 14:52:20,990 - app.services.llm_service - INFO - LLM service initialized successfully
-2025-11-09 14:52:20,990 - app.core.dependencies - INFO - LLM service initialized successfully
-2025-11-09 14:52:20,991 - app.core.middleware - INFO - Response: 200 - Time: 1.068s - Path: /api/v1/tools
-INFO:     127.0.0.1:50494 - "GET /api/v1/tools HTTP/1.1" 200 OK
-2025-11-09 14:52:20,992 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
-2025-11-09 14:52:20,993 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
-INFO:     127.0.0.1:50494 - "GET /api/v1/tools HTTP/1.1" 200 OK
-INFO:     127.0.0.1:50494 - "OPTIONS /api/v1/chat HTTP/1.1" 200 OK
-2025-11-09 14:52:25,275 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
-2025-11-09 14:52:25,280 - app.services.debug_service - INFO - Debug mode disabled
-2025-11-09 14:52:25,983 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-2025-11-09 14:52:26,014 - app.core.middleware - INFO - Response: 200 - Time: 0.740s - Path: /api/v1/chat
-INFO:     127.0.0.1:50494 - "POST /api/v1/chat HTTP/1.1" 200 OK
-2025-11-09 14:53:22,227 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
-2025-11-09 14:53:22,232 - app.services.debug_service - INFO - Debug mode disabled
-2025-11-09 14:53:22,869 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-2025-11-09 14:53:22,877 - app.core.middleware - INFO - Response: 200 - Time: 0.650s - Path: /api/v1/chat
-INFO:     127.0.0.1:47884 - "POST /api/v1/chat HTTP/1.1" 200 OK
-2025-11-09 14:53:33,311 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
-2025-11-09 14:53:33,312 - app.services.debug_service - INFO - Debug mode disabled
-2025-11-09 14:53:33,720 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-2025-11-09 14:53:34,840 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
-2025-11-09 14:53:35,667 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
-2025-11-09 14:53:35,676 - app.core.middleware - INFO - Response: 200 - Time: 2.365s - Path: /api/v1/chat
-INFO:     127.0.0.1:37046 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:08:33,504 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-09 13:08:34,090 - app.services.vector_store_service - INFO - Loading existing vector store from portfolio-db
+2025-11-09 13:08:34,095 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-11-09 13:08:34,310 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-11-09 13:08:34,510 - app.services.llm_service - INFO - Agent created successfully with 5 tools
+2025-11-09 13:08:34,510 - app.services.llm_service - INFO - LLM service initialized successfully
+2025-11-09 13:08:34,510 - app.core.dependencies - INFO - LLM service initialized successfully
+2025-11-09 13:08:34,511 - app.core.middleware - INFO - Response: 200 - Time: 1.007s - Path: /api/v1/tools
+INFO:     127.0.0.1:59284 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-09 13:08:34,513 - app.core.middleware - INFO - Request: GET /api/v1/tools - Client: 127.0.0.1
+2025-11-09 13:08:34,514 - app.core.middleware - INFO - Response: 200 - Time: 0.001s - Path: /api/v1/tools
+INFO:     127.0.0.1:59284 - "GET /api/v1/tools HTTP/1.1" 200 OK
+2025-11-09 13:09:05,529 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:09:05,531 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:09:05,930 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:09:06,236 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:09:06,239 - app.core.middleware - INFO - Response: 200 - Time: 0.710s - Path: /api/v1/chat
+INFO:     127.0.0.1:54020 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:09:26,704 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:09:26,705 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:09:27,243 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:09:27,246 - app.core.middleware - INFO - Response: 200 - Time: 0.542s - Path: /api/v1/chat
+INFO:     127.0.0.1:35876 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:10:16,378 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:10:16,379 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:10:16,996 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:10:17,000 - app.core.middleware - INFO - Response: 200 - Time: 0.622s - Path: /api/v1/chat
+INFO:     127.0.0.1:54420 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:11:01,412 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:11:01,416 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:11:02,052 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:11:03,770 - googleapiclient.discovery_cache - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-11-09 13:11:04,715 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:11:04,720 - app.core.middleware - INFO - Response: 200 - Time: 3.308s - Path: /api/v1/chat
+INFO:     127.0.0.1:37988 - "POST /api/v1/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50818 - "OPTIONS /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:12:38,644 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:12:38,649 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:12:39,231 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:12:39,744 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:12:39,756 - app.core.middleware - INFO - Response: 200 - Time: 1.112s - Path: /api/v1/chat
+INFO:     127.0.0.1:50832 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:12:57,053 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:12:57,057 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:12:57,534 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:12:57,538 - app.core.middleware - INFO - Response: 200 - Time: 0.485s - Path: /api/v1/chat
+INFO:     127.0.0.1:47108 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:13:41,312 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:13:41,316 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:13:41,903 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:13:41,909 - app.core.middleware - INFO - Response: 200 - Time: 0.597s - Path: /api/v1/chat
+INFO:     127.0.0.1:47318 - "POST /api/v1/chat HTTP/1.1" 200 OK
+2025-11-09 13:14:17,934 - app.core.middleware - INFO - Request: POST /api/v1/chat - Client: 127.0.0.1
+2025-11-09 13:14:17,935 - app.services.debug_service - INFO - Debug mode disabled
+2025-11-09 13:14:18,459 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:14:19,584 - httpx - INFO - HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2025-11-09 13:14:19,593 - app.core.middleware - INFO - Response: 200 - Time: 1.660s - Path: /api/v1/chat
+INFO:     127.0.0.1:34050 - "POST /api/v1/chat HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [226868]

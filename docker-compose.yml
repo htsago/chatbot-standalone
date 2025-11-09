@@ -4,9 +4,9 @@ services:
     build:
       context: ./porto-frontend
       dockerfile: Dockerfile
-    container_name: agent-v1-frontend
+    container_name: portfolio-frontend
     ports:
-      - "5174:5173"
+      - "5173:5173"
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -29,9 +29,9 @@ services:
     build:
       context: ./porto-backend
       dockerfile: Dockerfile
-    container_name: agent-v1-backend
+    container_name: portfolio-chatbot
     ports:
-      - "8091:8090"
+      - "8090:8090"
     env_file:
       - ./porto-backend/.env
     environment:
