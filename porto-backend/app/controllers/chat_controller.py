@@ -1,6 +1,6 @@
 """Chat controller for handling chat requests."""
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import HTTPException, Depends
 
@@ -28,17 +28,7 @@ class ChatController:
                 debug_mode=request.debug_mode
             )
             
-            tool_call_models = None
-            if tool_calls:
-                tool_call_models = [
-                    ToolCall(
-                        name=tc["name"],
-                        args=tc["args"],
-                        mcp=tc.get("mcp", False),
-                        tool_schema=tc.get("tool_schema")
-                    )
-                    for tc in tool_calls
-                ]
+            tool_call_models = self._convert_tool_calls(tool_calls)
             
             return ChatResponse(
                 answer=answer,
@@ -56,11 +46,11 @@ class ChatController:
             logger.error(f"Unexpected error: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail="Internal server error")
     
-    def process_query(self, request: Question) -> dict:
+    def process_query(self, request: Question) -> dict[str, Any]:
         """Process a simple query request."""
         try:
             query = self._validate_message(request.query)
-            answer, _, _ = self.llm_service.invoke(query)
+            answer, _, _, _ = self.llm_service.invoke(query)
             return Response(answer=answer).fetch_answer()
         except ValidationError as e:
             raise HTTPException(status_code=400, detail=str(e))
@@ -70,6 +60,21 @@ class ChatController:
         except Exception as e:
             logger.error(f"Unexpected error: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail="Internal server error")
+    
+    @staticmethod
+    def _convert_tool_calls(tool_calls: Optional[list[dict[str, Any]]]) -> Optional[list[ToolCall]]:
+        """Convert tool calls from dict to ToolCall models."""
+        if not tool_calls:
+            return None
+        return [
+            ToolCall(
+                name=tc["name"],
+                args=tc["args"],
+                mcp=tc.get("mcp", False),
+                tool_schema=tc.get("tool_schema")
+            )
+            for tc in tool_calls
+        ]
     
     @staticmethod
     def _validate_message(message: Optional[str]) -> str:

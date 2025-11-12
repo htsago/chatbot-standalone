@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getTools, type Tool } from '../services/apiService';
 import { type FunctionCall } from '../types';
 import ToolsAvatar from './ToolsAvatar';
-import { EmailIcon, SearchIcon, DatabaseIcon, ClockIcon, CodeIcon } from './icons';
+import { SearchIcon, DatabaseIcon, ClockIcon } from './icons';
 
 interface ToolsSidebarProps {
   toolCalls?: FunctionCall[];
@@ -138,16 +138,12 @@ const ToolsSidebar = ({ toolCalls = [] }: ToolsSidebarProps) => {
                 className="w-full px-6 py-5 flex items-center justify-between hover:bg-gray-800/50 active:bg-gray-800/70 transition-all duration-200 group focus:outline-none focus:ring-2 focus:ring-teal-500/50 rounded-t-2xl"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  {tool.name === 'send_email' ? (
-                    <EmailIcon className="w-4 h-4" color="text-teal-400" />
-                  ) : tool.name === 'retriever_tool' ? (
+                  {tool.name === 'retriever_tool' ? (
                     <DatabaseIcon className="w-4 h-4" color="text-teal-400" />
                   ) : tool.name === 'web_search_tool' ? (
                     <SearchIcon className="w-4 h-4" color="text-teal-400" />
                   ) : tool.name === 'get_current_datetime' ? (
                     <ClockIcon className="w-4 h-4" color="text-teal-400" />
-                  ) : tool.name === 'execute_python_code' ? (
-                    <CodeIcon className="w-4 h-4" color="text-teal-400" />
                   ) : (
                     <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all ${isUsed ? 'bg-teal-400 animate-pulse' : 'bg-teal-400'}`}></div>
                   )}

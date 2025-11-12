@@ -4,7 +4,6 @@ from functools import lru_cache
 from typing import Optional
 
 from app.services.llm_service import LLMService
-from app.services.gmail_service import GmailService
 from app.services.tool_manager import ToolManager
 from app.services.vector_store_service import VectorStoreService
 from app.services.debug_service import DebugService
@@ -18,7 +17,6 @@ class DIContainer:
     
     def __init__(self):
         self._llm_service: Optional[LLMService] = None
-        self._gmail_service: Optional[GmailService] = None
         self._tool_manager: Optional[ToolManager] = None
         self._vector_store: Optional[VectorStoreService] = None
         self._debug_service: Optional[DebugService] = None
@@ -33,18 +31,6 @@ class DIContainer:
                 logger.error(f"Failed to initialize LLM service: {str(e)}")
                 raise LLMServiceError(f"Failed to initialize LLM service: {str(e)}") from e
         return self._llm_service
-    
-    def get_gmail_service(self) -> GmailService:
-        """Get or create Gmail service instance."""
-        if self._gmail_service is None:
-            try:
-                llm_service = self.get_llm_service()
-                self._gmail_service = llm_service.tool_manager._get_gmail_service()
-                logger.info("Gmail service initialized successfully")
-            except Exception as e:
-                logger.error(f"Failed to initialize Gmail service: {str(e)}")
-                raise
-        return self._gmail_service
     
     def get_tool_manager(self) -> ToolManager:
         """Get or create ToolManager instance."""
@@ -70,7 +56,6 @@ class DIContainer:
     def reset(self):
         """Reset all service instances (useful for testing)."""
         self._llm_service = None
-        self._gmail_service = None
         self._tool_manager = None
         self._vector_store = None
         self._debug_service = None
@@ -101,11 +86,6 @@ def reset_container():
 def get_llm_service() -> LLMService:
     """FastAPI dependency for LLM service."""
     return get_container().get_llm_service()
-
-
-def get_gmail_service() -> GmailService:
-    """FastAPI dependency for Gmail service."""
-    return get_container().get_gmail_service()
 
 
 def get_tool_manager() -> ToolManager:

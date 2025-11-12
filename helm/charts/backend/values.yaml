@@ -1,0 +1,32 @@
+image:
+  repository: chatbot-backend
+  tag: latest
+
+service:
+  port: 8090
+  targetPort: 8090
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+
+replicas: 1
+
+env: {}
+
+volumes:
+  data:
+    enabled: false
+  portfolioDb:
+    enabled: true
+    size: 1Gi
+
+healthcheck:
+  enabled: true
+  initialDelaySeconds: 40
+  periodSeconds: 30
+  timeoutSeconds: 10

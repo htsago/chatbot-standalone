@@ -159,55 +159,5 @@ export async function getTools(): Promise<ToolsResponse> {
   }
 }
 
-export interface GmailAuthResponse {
-  auth_url: string;
-}
-
-export interface GmailStatusResponse {
-  authenticated: boolean;
-  has_credentials: boolean;
-  status: string;
-  error?: string;
-}
-
-export async function getGmailAuthUrl(redirectUri: string): Promise<GmailAuthResponse> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/gmail/auth?redirect_uri=${encodeURIComponent(redirectUri)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error getting Gmail auth URL:', error);
-    throw error;
-  }
-}
-
-export async function getGmailStatus(): Promise<GmailStatusResponse> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/v1/gmail/status`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error getting Gmail status:', error);
-    throw error;
-  }
-}
 
 

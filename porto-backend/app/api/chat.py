@@ -1,10 +1,12 @@
 """Chat API routes."""
+import time
+from datetime import datetime
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel, Field
 
 from app.controllers.chat_controller import ChatController, get_chat_controller
 from app.models.chat import ChatRequest, ChatResponse, Question
 from app.core.dependencies import get_llm_service, get_tool_manager
-from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
@@ -47,8 +49,6 @@ def execute_tool_in_sandbox(
     tool_manager=Depends(get_tool_manager)
 ):
     """Execute a tool in sandbox mode for testing and experimentation."""
-    import time
-    from datetime import datetime
     tool_name = request.tool_name
     args = request.args
     
@@ -56,34 +56,22 @@ def execute_tool_in_sandbox(
         "retriever_tool": tool_manager._retriever_impl,
         "get_current_datetime": lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "web_search_tool": tool_manager._web_search_impl,
-        "execute_python_code": tool_manager._execute_python_impl,
-        "send_email": tool_manager._send_email_impl,
     }
     
     if tool_name not in tool_impl_map:
         return {
+            "success": False,
             "error": f"Tool '{tool_name}' not found",
-            "available_tools": list(tool_impl_map.keys())
+            "available_tools": list(tool_impl_map.keys()),
+            "timestamp": datetime.now().isoformat()
         }
     
+    start_time = time.time()
     try:
-        start_time = time.time()
         tool_func = tool_impl_map[tool_name]
         
         if tool_name == "get_current_datetime":
             result = tool_func()
-        elif tool_name == "execute_python_code":
-            code = args.get("code", "")
-            timeout = args.get("timeout", 10)
-            result = tool_func(code, timeout)
-        elif tool_name == "send_email":
-            sender_email = args.get("sender_email", "")
-            recipient_email = args.get("recipient_email", "")
-            subject = args.get("subject", "")
-            message = args.get("message", "")
-            cc = args.get("cc")
-            bcc = args.get("bcc")
-            result = tool_func(sender_email, recipient_email, subject, message, cc, bcc)
         else:
             query = args.get("query", "")
             result = tool_func(query)
@@ -99,7 +87,7 @@ def execute_tool_in_sandbox(
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
-        execution_time_ms = (time.time() - start_time) * 1000 if 'start_time' in locals() else 0
+        execution_time_ms = (time.time() - start_time) * 1000
         return {
             "success": False,
             "tool_name": tool_name,

@@ -137,13 +137,11 @@ InMemorySaver (Checkpointer)
 
 ## Tools
 
-The agent has access to 5 tools:
+The agent has access to 3 tools:
 
 1. **retriever_tool**: Searches portfolio knowledge base (FAISS vector store)
 2. **web_search_tool**: Searches web using Tavily API
-3. **execute_python_code**: Safely executes Python code in sandbox
-4. **get_current_datetime**: Returns current date and time
-5. **send_email**: Sends emails via Gmail API
+3. **get_current_datetime**: Returns current date and time
 
 **Tool Selection:**
 - Agent decides autonomously based on query
@@ -154,7 +152,7 @@ The agent has access to 5 tools:
 
 ### Prerequisites
 - Python 3.10+, Node.js 18+
-- API Keys: Groq, OpenAI, Tavily (optional), Google Cloud (for Gmail)
+- API Keys: Groq, OpenAI, Tavily (optional)
 
 ### Getting API Keys
 
@@ -164,11 +162,6 @@ The agent has access to 5 tools:
 
 **Optional:**
 - **Tavily API Key**: Get from [https://tavily.com/](https://tavily.com/) - For web search functionality
-- **Google Cloud Credentials**: 
-  - Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-  - Create OAuth 2.0 credentials
-  - Enable Gmail API
-  - Get `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
 
 ### Installation
 

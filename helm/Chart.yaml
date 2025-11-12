@@ -1,0 +1,13 @@
+apiVersion: v2
+name: chatbot-standalone
+description: Chatbot Standalone Application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+dependencies:
+  - name: backend
+    version: 0.1.0
+    repository: "file://./charts/backend"
+  - name: frontend
+    version: 0.1.0
+    repository: "file://./charts/frontend"

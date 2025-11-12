@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 
 from app.api.chat import router as chat_router
-from app.api.gmail import router as gmail_router
 from app.core.middleware import LoggingMiddleware, SecurityHeadersMiddleware
 from app.core.settings import get_settings
 
@@ -38,7 +37,6 @@ app.add_middleware(
 
 # Include routers
 app.include_router(chat_router)
-app.include_router(gmail_router)
 
 @app.get("/")
 def root():

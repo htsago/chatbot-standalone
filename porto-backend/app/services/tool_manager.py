@@ -1,20 +1,17 @@
 import json
 import logging
 import os
-import subprocess
-import tempfile
-import sys
-import re
+import time
 from datetime import datetime
-from typing import Optional
+from functools import wraps
+from typing import Optional, Any, Callable
 
 from langchain.tools import tool
 from langchain_community.vectorstores import FAISS
 from tavily import TavilyClient
 
-from app.core.constants import RETRIEVAL_K, get_gmail_redirect_uri
+from app.core.constants import RETRIEVAL_K, WEB_SEARCH_MAX_RESULTS, WEB_SEARCH_CONTENT_MAX_LENGTH
 from app.core.exceptions import ToolError, VectorStoreError
-from app.services.gmail_service import GmailService
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +21,6 @@ class ToolManager:
 
     def __init__(self):
         self._vector_store: Optional[FAISS] = None
-        self._gmail_service: Optional[GmailService] = None
 
     def set_vector_store(self, vector_store: FAISS):
         """Set the vector store for retrieval tools."""
@@ -58,20 +54,22 @@ class ToolManager:
             if not api_key:
                 return "Web search unavailable. Configure TAVILY_API_KEY."
 
-            response = TavilyClient(api_key=api_key).search(query=query, max_results=4)
+            response = TavilyClient(api_key=api_key).search(query=query, max_results=WEB_SEARCH_MAX_RESULTS)
             results = response.get("results", [])
             if not results:
                 return "No search results found."
 
             formatted = []
             links = []
-            for i, r in enumerate(results[:4], 1):
+            for i, r in enumerate(results[:WEB_SEARCH_MAX_RESULTS], 1):
                 title = r.get("title", "No title")
                 content = r.get("content", "")
                 url = r.get("url", "")
 
+                content_preview = content[:WEB_SEARCH_CONTENT_MAX_LENGTH]
+                content_suffix = "..." if len(content) > WEB_SEARCH_CONTENT_MAX_LENGTH else ""
                 formatted.append(
-                    f"[{i}] {title}\n{content[:300]}{'...' if len(content) > 300 else ''}\nSource: {url}"
+                    f"[{i}] {title}\n{content_preview}{content_suffix}\nSource: {url}"
                 )
                 links.append({"title": title, "url": url})
 
@@ -79,160 +77,6 @@ class ToolManager:
         except Exception as e:
             logger.error(f"Web search error: {e}")
             raise ToolError(f"Error performing web search: {e}") from e
-
-    def _execute_python_impl(self, code: str, timeout: int = 10) -> str:
-        """Execute Python code in a safe sandboxed environment."""
-        dangerous_patterns = [
-            '__import__', 'eval(', 'exec(', 'compile(',
-            'input(', 'raw_input(', 'execfile(',
-            'reload(', '__builtins__', '__import__',
-            'subprocess.', 'os.system', 'os.popen', 'os.exec',
-            'shutil.', 'pickle.loads', 'marshal.loads',
-        ]
-
-        code_lower = code.lower()
-        for pattern in dangerous_patterns:
-            if pattern in code_lower:
-                return f"Error: Security restriction - '{pattern}' is not allowed for safety reasons."
-
-        if any(op in code_lower for op in ['open(', 'file(', 'with open']):
-            if any(mode in code_lower for mode in ['w', 'a', 'x', '+']):
-                return "Error: File write operations are not allowed for safety reasons."
-
-        timeout = min(timeout, 30)
-
-        try:
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
-                f.write(code)
-                temp_file = f.name
-
-            try:
-                result = subprocess.run(
-                    [sys.executable, temp_file],
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout,
-                    cwd=tempfile.gettempdir(),
-                    env={**os.environ, 'PYTHONPATH': ''}
-                )
-
-                output = []
-                if result.stdout:
-                    output.append(f"Output:\n{result.stdout}")
-                if result.stderr:
-                    output.append(f"Errors:\n{result.stderr}")
-                if result.returncode != 0:
-                    output.append(f"Exit code: {result.returncode}")
-
-                return "\n".join(output) if output else "Code executed successfully (no output)."
-
-            except subprocess.TimeoutExpired:
-                return f"Error: Code execution timed out after {timeout} seconds."
-            except Exception as e:
-                return f"Error executing code: {str(e)}"
-            finally:
-                try:
-                    os.unlink(temp_file)
-                except Exception:
-                    pass
-
-        except Exception as e:
-            logger.error(f"Python execution error: {e}")
-            return f"Error: {str(e)}"
-
-    @staticmethod
-    def _validate_email(email: str) -> bool:
-        """Validate email address format."""
-        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return bool(re.match(pattern, email))
-
-    def _get_gmail_service(self) -> Optional[GmailService]:
-        """Get or create Gmail service instance."""
-        if self._gmail_service is None:
-            self._gmail_service = GmailService()
-        return self._gmail_service
-    
-    def _format_auth_required_message(self, sender_email: str, auth_url: str) -> str:
-        """Format authentication required message with link."""
-        return (
-            f"GMAIL-AUTHENTIFIZIERUNG ERFORDERLICH\n\n"
-            f"Das Gmail-Konto {sender_email} muss zuerst authentifiziert werden, "
-            f"bevor E-Mails gesendet werden können.\n\n"
-            f"🔗 AUTHENTIFIZIERUNGS-LINK:\n{auth_url}\n\n"
-            f"📋 ANLEITUNG:\n"
-            f"1. Klicke auf den Link oben\n"
-            f"2. Melde dich mit {sender_email} bei Google an\n"
-            f"3. Erlaube den Zugriff auf Gmail\n"
-            f"4. Nach erfolgreicher Authentifizierung kannst du die E-Mail erneut senden\n\n"
-            f"⚠️ WICHTIG: Der Link muss im Browser geöffnet werden."
-        )
-    
-    def _send_email_impl(
-        self,
-        sender_email: str,
-        recipient_email: str,
-        subject: str,
-        message: str,
-        cc: Optional[str] = None,
-        bcc: Optional[str] = None
-    ) -> str:
-        """Send email via Gmail API."""
-        if not self._validate_email(sender_email):
-            return f"Error: Invalid sender email address: {sender_email}"
-        
-        if not self._validate_email(recipient_email):
-            return f"Error: Invalid recipient email address: {recipient_email}"
-        
-        if cc and not self._validate_email(cc):
-            return f"Error: Invalid CC email address: {cc}"
-        
-        if bcc and not self._validate_email(bcc):
-            return f"Error: Invalid BCC email address: {bcc}"
-        
-        if not subject or not subject.strip():
-            return "Error: Subject cannot be empty"
-        
-        if not message or not message.strip():
-            return "Error: Message cannot be empty"
-        
-        gmail_service = self._get_gmail_service()
-        
-        if not gmail_service.client_id or not gmail_service.client_secret:
-            error_msg = (
-                "FEHLER: Google Cloud Credentials nicht konfiguriert. "
-                "Bitte setzen Sie die Umgebungsvariablen GOOGLE_CLIENT_ID und GOOGLE_CLIENT_SECRET."
-            )
-            logger.error(error_msg)
-            return error_msg
-        
-        if not gmail_service.is_authenticated():
-            redirect_uri = get_gmail_redirect_uri()
-            auth_url = gmail_service.get_auth_url(redirect_uri)
-            if auth_url:
-                return self._format_auth_required_message(sender_email, auth_url)
-            else:
-                error_msg = (
-                    f"FEHLER: Gmail-Authentifizierung erforderlich. "
-                    f"Das Gmail-Konto {sender_email} muss zuerst authentifiziert werden. "
-                    f"Die gmail_token.json Datei fehlt oder ist ungültig. "
-                    f"Bitte kontaktiere den Administrator oder verwende den Authentifizierungs-Endpunkt."
-                )
-                logger.error(error_msg)
-                return error_msg
-        
-        try:
-            result = gmail_service.send_email(
-                sender_email, recipient_email, subject, message, cc, bcc
-            )
-            return result
-        except ToolError as e:
-            error_msg = f"FEHLER: {str(e)}"
-            logger.error(error_msg)
-            return error_msg
-        except Exception as e:
-            error_msg = f"FEHLER beim Senden der E-Mail: {str(e)}"
-            logger.error(error_msg, exc_info=True)
-            return error_msg
 
     def get_all_tools(self) -> list[dict]:
         """Get all available tools with their schemas."""
@@ -264,52 +108,6 @@ class ToolManager:
                     }
                 },
                 "required": ["query"]
-            },
-            {
-                "name": "execute_python_code",
-                "description": "Execute Python code in a safe sandboxed environment. Use this for calculations, data processing, or code examples.",
-                "parameters": {
-                    "code": {
-                        "type": "string",
-                        "description": "Python code to execute"
-                    },
-                    "timeout": {
-                        "type": "integer",
-                        "description": "Execution timeout in seconds (default: 10, max: 30)"
-                    }
-                },
-                "required": ["code"]
-            },
-            {
-                "name": "send_email",
-                "description": "Send an email via Gmail API. Use this when the user wants to send an email. Requires Gmail authentication.",
-                "parameters": {
-                    "sender_email": {
-                        "type": "string",
-                        "description": "Email address of the sender (must be authenticated Gmail account)"
-                    },
-                    "recipient_email": {
-                        "type": "string",
-                        "description": "Email address of the recipient"
-                    },
-                    "subject": {
-                        "type": "string",
-                        "description": "Email subject line"
-                    },
-                    "message": {
-                        "type": "string",
-                        "description": "Email message body"
-                    },
-                    "cc": {
-                        "type": "string",
-                        "description": "Optional CC (carbon copy) email address"
-                    },
-                    "bcc": {
-                        "type": "string",
-                        "description": "Optional BCC (blind carbon copy) email address"
-                    }
-                },
-                "required": ["sender_email", "recipient_email", "subject", "message"]
             }
         ]
         return tools_data
@@ -327,12 +125,9 @@ class ToolManager:
                 }
         return None
 
-    def create_langchain_tools(self, debug_mode: bool = False, debug_service=None) -> list:
+    def create_langchain_tools(self, debug_mode: bool = False, debug_service: Optional[Any] = None) -> list[Any]:
         """Create LangChain tools."""
-        import time
-        from functools import wraps
-
-        def create_tracked_impl(impl_func, tool_name: str, param_names: list = None):
+        def create_tracked_impl(impl_func: Callable, tool_name: str, param_names: Optional[list[str]] = None) -> Callable:
             if not debug_mode or debug_service is None:
                 return impl_func
             
@@ -381,16 +176,6 @@ class ToolManager:
         datetime_impl = create_tracked_impl(datetime_impl, "get_current_datetime", [])
         
         web_search_impl = create_tracked_impl(self._web_search_impl, "web_search_tool", ["query"])
-        
-        def python_impl(code: str, timeout: int = 10):
-            return self._execute_python_impl(code, min(timeout, 30))
-        python_impl = create_tracked_impl(python_impl, "execute_python_code", ["code", "timeout"])
-        
-        send_email_impl = create_tracked_impl(
-            self._send_email_impl,
-            "send_email",
-            ["sender_email", "recipient_email", "subject", "message", "cc", "bcc"]
-        )
 
         @tool
         def retriever_tool(query: str) -> str:
@@ -408,26 +193,4 @@ class ToolManager:
             """Search the web using Tavily API for general IT questions and technical topics."""
             return web_search_impl(query)
 
-        @tool
-        def execute_python_code(code: str, timeout: int = 10) -> str:
-            """Execute Python code in a safe sandboxed environment.
-            Use this for calculations, data processing, or code examples.
-            Timeout is in seconds (default: 10, max: 30)."""
-            return python_impl(code, timeout)
-
-        @tool
-        def send_email(
-            sender_email: str,
-            recipient_email: str,
-            subject: str,
-            message: str,
-            cc: Optional[str] = None,
-            bcc: Optional[str] = None
-        ) -> str:
-            """Send an email via Gmail API.
-            Use this tool when the user wants to send an email.
-            Requires Gmail authentication. If not authenticated, returns authentication link.
-            The tool validates email addresses and sends the email."""
-            return send_email_impl(sender_email, recipient_email, subject, message, cc, bcc)
-
-        return [retriever_tool, get_current_datetime, web_search_tool, execute_python_code, send_email]
+        return [retriever_tool, get_current_datetime, web_search_tool]

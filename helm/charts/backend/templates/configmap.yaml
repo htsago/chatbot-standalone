@@ -1,0 +1,14 @@
+# Backend ConfigMap: Stores configuration data (portfolio-knowledge.json)
+# Only created if volumes.data.enabled: true is set in values.yaml
+{{- if .Values.volumes.data.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-data" (include "backend.fullname" .) }}
+  labels:
+    {{- include "backend.labels" . | nindent 4 }}
+data:
+  portfolio-knowledge.json: |
+{{ .Files.Get "portfolio-knowledge.json" | indent 4 }}
+{{- end -}}
+

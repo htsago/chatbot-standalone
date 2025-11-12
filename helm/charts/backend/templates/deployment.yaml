@@ -1,0 +1,79 @@
+# Backend Deployment: Starts and manages the backend containers
+# Defines image, environment variables, health checks, resource limits, and volumes
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "backend.fullname" . }}
+  labels:
+    {{- include "backend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "backend.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: PYTHONPATH
+              value: "/app"
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              {{- if kindIs "map" $value }}
+              valueFrom:
+                {{- toYaml $value | nindent 16 }}
+              {{- else }}
+              value: {{ $value | quote }}
+              {{- end }}
+            {{- end }}
+          {{- if .Values.healthcheck.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: {{ .Values.healthcheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.timeoutSeconds }}
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: {{ .Values.healthcheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthcheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthcheck.timeoutSeconds }}
+            failureThreshold: 3
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            {{- if .Values.volumes.data.enabled }}
+            - name: data
+              mountPath: /app/data
+              readOnly: true
+            {{- end }}
+            {{- if .Values.volumes.portfolioDb.enabled }}
+            - name: portfolio-db
+              mountPath: /app/portfolio-db
+            {{- end }}
+      volumes:
+        {{- if .Values.volumes.data.enabled }}
+        - name: data
+          configMap:
+            name: {{ printf "%s-data" (include "backend.fullname" .) }}
+        {{- end }}
+        {{- if .Values.volumes.portfolioDb.enabled }}
+        - name: portfolio-db
+          persistentVolumeClaim:
+            claimName: {{ printf "%s-portfolio-db" (include "backend.fullname" .) }}
+        {{- end }}

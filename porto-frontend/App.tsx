@@ -5,7 +5,6 @@ import Toast from './components/Toast';
 import ToolsSidebar from './components/ToolsSidebar';
 import TabsSidebar from './components/TabsSidebar';
 import DebugPanel from './components/DebugPanel';
-import EmailForm from './components/EmailForm';
 import { BotIcon } from './components/icons';
 import { type Message as MessageType, type FunctionCall } from './types';
 import { sendChatMessage } from './services/apiService';
@@ -474,49 +473,11 @@ const App = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {messages.map((msg, index) => {
-                    // Check if this message has a send_email tool call
-                    const hasSendEmailTool = msg.toolCalls?.some(
-                      tc => tc.name === 'send_email' || tc.name === 'send_email_lc'
-                    );
-                    
-                    // Check if the previous user message was about sending email
-                    const prevUserMessage = index > 0 ? messages[index - 1] : null;
-                    const userWantsEmail = prevUserMessage?.role === 'user' && 
-                      prevUserMessage?.text?.toLowerCase().match(/\b(email|e-mail|mail|senden|send|versenden|verschicken)\b/i);
-                    
-                    // Check if current bot message mentions email form
-                    const botMentionsForm = msg.role === 'model' && 
-                      msg.text?.toLowerCase().match(/\b(formular|form|felder|ausfüllen)\b/i);
-                    
-                    // Show form if:
-                    // 1. Tool was called, OR
-                    // 2. User asked about email AND this is the bot's response (last message), OR
-                    // 3. Bot mentions form in response
-                    const shouldShowForm = (hasSendEmailTool && msg.role === 'model') || 
-                      (userWantsEmail && msg.role === 'model' && index === messages.length - 1) ||
-                      (botMentionsForm && msg.role === 'model' && index === messages.length - 1);
-                    
-                    return (
-                      <div key={msg.id} className="animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
-                        <Message message={msg} />
-                        {shouldShowForm && (
-                          <div className="mt-4 animate-slide-up" style={{ animationDelay: `${(index + 1) * 50}ms` }}>
-                            <EmailForm 
-                              threadId={activeTab?.threadId || null}
-                              onSend={() => {
-                                // Optionally refresh or update UI after message sent
-                              }}
-                              onToast={(message, type) => {
-                                setToastMessage(message);
-                                setToastType(type ?? 'info');
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {messages.map((msg, index) => (
+                    <div key={msg.id} className="animate-slide-up" style={{ animationDelay: `${index * 50}ms` }}>
+                      <Message message={msg} />
+                    </div>
+                  ))}
                   <div ref={messagesEndRef} />
                 </div>
               )}

@@ -1,0 +1,23 @@
+image:
+  repository: chatbot-frontend
+  tag: latest
+
+service:
+  port: 5173
+  targetPort: 5173
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
+
+replicas: 1
+
+healthcheck:
+  enabled: true
+  initialDelaySeconds: 40
+  periodSeconds: 30
+  timeoutSeconds: 10

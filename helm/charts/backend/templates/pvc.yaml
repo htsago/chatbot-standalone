@@ -1,0 +1,17 @@
+# Backend PersistentVolumeClaim: Creates persistent storage for the portfolio database
+# Only created if volumes.portfolioDb.enabled: true is set in values.yaml
+{{- if .Values.volumes.portfolioDb.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-portfolio-db" (include "backend.fullname" .) }}
+  labels:
+    {{- include "backend.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.volumes.portfolioDb.size }}
+{{- end -}}
+

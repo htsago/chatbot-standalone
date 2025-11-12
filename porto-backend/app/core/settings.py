@@ -26,28 +26,6 @@ class Settings(BaseSettings):
     portfolio_db_path: str = "portfolio-db"
     knowledge_base_path: str = "data/portfolio-knowledge.json"
     
-    # Gmail Settings
-    google_client_id: Optional[str] = Field(
-        default=None,
-        description="Gmail OAuth Client ID (from GOOGLE_CLIENT_ID env var)"
-    )
-    google_client_secret: Optional[str] = Field(
-        default=None,
-        description="Gmail OAuth Client Secret (from GOOGLE_CLIENT_SECRET env var)"
-    )
-    
-    @property
-    def gmail_client_id(self) -> Optional[str]:
-        """Alias for google_client_id for backward compatibility."""
-        return self.google_client_id
-    
-    @property
-    def gmail_client_secret(self) -> Optional[str]:
-        """Alias for google_client_secret for backward compatibility."""
-        return self.google_client_secret
-    gmail_token_path: str = "gmail_token.json"
-    gmail_callback_path: str = "/api/v1/gmail/callback"
-    
     # Tavily Settings
     tavily_api_key: Optional[str] = None
     
