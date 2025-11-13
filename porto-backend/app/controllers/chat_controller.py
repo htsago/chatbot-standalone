@@ -25,7 +25,8 @@ class ChatController:
             answer, used_thread_id, tool_calls, debug_info = self.llm_service.invoke(
                 message, 
                 thread_id=request.thread_id,
-                debug_mode=request.debug_mode
+                debug_mode=request.debug_mode,
+                model=request.model
             )
             
             tool_call_models = self._convert_tool_calls(tool_calls)

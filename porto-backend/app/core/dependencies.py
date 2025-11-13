@@ -5,8 +5,6 @@ from typing import Optional
 
 from app.services.llm_service import LLMService
 from app.services.tool_manager import ToolManager
-from app.services.vector_store_service import VectorStoreService
-from app.services.debug_service import DebugService
 from app.core.exceptions import LLMServiceError
 
 logger = logging.getLogger(__name__)
@@ -18,8 +16,6 @@ class DIContainer:
     def __init__(self):
         self._llm_service: Optional[LLMService] = None
         self._tool_manager: Optional[ToolManager] = None
-        self._vector_store: Optional[VectorStoreService] = None
-        self._debug_service: Optional[DebugService] = None
     
     def get_llm_service(self) -> LLMService:
         """Get or create LLM service instance."""
@@ -38,27 +34,6 @@ class DIContainer:
             llm_service = self.get_llm_service()
             self._tool_manager = llm_service.tool_manager
         return self._tool_manager
-    
-    def get_vector_store(self) -> VectorStoreService:
-        """Get or create VectorStoreService instance."""
-        if self._vector_store is None:
-            llm_service = self.get_llm_service()
-            self._vector_store = llm_service.vector_store
-        return self._vector_store
-    
-    def get_debug_service(self) -> DebugService:
-        """Get or create DebugService instance."""
-        if self._debug_service is None:
-            llm_service = self.get_llm_service()
-            self._debug_service = llm_service.debug_service
-        return self._debug_service
-    
-    def reset(self):
-        """Reset all service instances (useful for testing)."""
-        self._llm_service = None
-        self._tool_manager = None
-        self._vector_store = None
-        self._debug_service = None
 
 
 # Global container instance
@@ -71,14 +46,6 @@ def get_container() -> DIContainer:
     if _container is None:
         _container = DIContainer()
     return _container
-
-
-def reset_container():
-    """Reset the global DI container (useful for testing)."""
-    global _container
-    if _container is not None:
-        _container.reset()
-    _container = None
 
 
 # FastAPI dependency functions

@@ -6,6 +6,7 @@ interface ChatRequest {
   message: string;
   thread_id?: string | null;
   debug_mode?: boolean;
+  model?: string | null;
 }
 
 interface ToolCall {
@@ -50,13 +51,15 @@ export interface Tool {
 export async function sendChatMessage(
   message: string,
   threadId?: string | null,
-  debugMode?: boolean
+  debugMode?: boolean,
+  model?: string | null
 ): Promise<{ answer: string; threadId: string | null; toolCalls?: ToolCall[] | null; debugInfo?: any }> {
   try {
     const requestBody: ChatRequest = {
       message,
       thread_id: threadId || null,
       debug_mode: debugMode || false,
+      model: model || null,
     };
 
     const response = await fetch(`${API_BASE_URL}/api/v1/chat`, {

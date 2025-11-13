@@ -7,6 +7,21 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { BotIcon } from './icons';
 import { type Message as MessageType } from '../types';
 
+const getModelLabel = (value: string | undefined): string => {
+  if (!value) return '';
+  const modelMap: Record<string, string> = {
+    'qwen/qwen3-32b': 'Qwen 3 32B',
+    'meta-llama/llama-4-maverick-17b-128e-instruct': 'Llama 4 Maverick 17B',
+    'meta-llama/llama-4-scout-17b-16e-instruct': 'Llama 4 Scout 17B',
+    'moonshotai/kimi-k2-instruct-0905': 'Kimi K2',
+    'openai/gpt-oss-120b': 'GPT-OSS 120B',
+    'openai/gpt-oss-20b': 'GPT-OSS 20B',
+    'llama-3.1-8b-instant': 'Llama 3.1 8B Instant',
+    'llama-3.3-70b-versatile': 'Llama 3.3 70B',
+  };
+  return modelMap[value] || value;
+};
+
 interface MessageProps {
   message: MessageType & {
     timestamp?: Date;
@@ -16,51 +31,17 @@ interface MessageProps {
 
 const Message: React.FC<MessageProps> = ({ message }) => {
   const [isToolCallsExpanded, setIsToolCallsExpanded] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
-  const [copiedCodeIndex, setCopiedCodeIndex] = useState<string | null>(null);
   const codeBlockCounter = useRef(0);
   const isUser = message.role === 'user';
   const isBot = message.role === 'model';
 
-  const handleCopy = async () => {
-    if (message.text) {
-      await navigator.clipboard.writeText(message.text);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    }
-  };
-
-  const handleCopyCode = async (code: string, index: string) => {
-    await navigator.clipboard.writeText(code);
-    setCopiedCodeIndex(index);
-    setTimeout(() => setCopiedCodeIndex(null), 2000);
-  };
-
   return (
     <div className={`flex gap-4 group mb-4 justify-center`}>
       <div className={`flex-1 max-w-3xl`}>
-        <div className={`relative group/message ${isUser ? 'text-right' : ''}`}>
-          {isBot && message.text && (
-            <button
-              onClick={handleCopy}
-              className="absolute -top-2 -right-2 opacity-0 group-hover/message:opacity-100 transition-all duration-200 p-2 bg-gray-700 hover:bg-gray-600 rounded-xl shadow-lg hover:shadow-xl z-10 active:scale-95"
-              aria-label="Copy message"
-              title="Nachricht kopieren"
-            >
-              {isCopied ? (
-                <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-              )}
-            </button>
-          )}
-          <div className={`inline-block max-w-full px-5 md:px-6 py-4 md:py-5 rounded-xl transition-all bg-gradient-to-br from-gray-800/90 to-gray-900/90 ${isUser ? 'text-teal-100' : 'text-gray-100'} border border-gray-700/50 shadow-lg hover:shadow-xl hover:border-gray-600/50 backdrop-blur-sm ${isUser ? 'text-right ml-auto' : 'mr-auto'}`}>
+        <div className={`relative group/message`}>
+          <div className={`inline-block max-w-full px-5 md:px-6 py-4 md:py-5 rounded-xl transition-all bg-gradient-to-br from-gray-800/90 to-gray-900/90 ${isUser ? 'text-teal-100' : 'text-gray-100'} border border-gray-700/50 shadow-lg hover:shadow-xl hover:border-gray-600/50 backdrop-blur-sm ${isUser ? 'ml-auto mr-8 md:mr-12' : 'mr-auto'}`}>
           {message.isStreaming && (
-            <div className={`flex items-center gap-1.5 mb-2 ${isUser ? 'justify-end' : ''}`}>
+            <div className={`flex items-center gap-1.5 mb-2`}>
               <span className="inline-block w-2 h-2 bg-teal-400 rounded-full animate-pulse"></span>
               <span className="inline-block w-2 h-2 bg-teal-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></span>
               <span className="inline-block w-2 h-2 bg-teal-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></span>
@@ -68,7 +49,7 @@ const Message: React.FC<MessageProps> = ({ message }) => {
           )}
           
           {message.text ? (
-            <div className={`prose prose-invert max-w-none prose-sm ${isUser ? 'text-right' : ''}`}>
+            <div className={`prose prose-invert max-w-none prose-sm text-left`}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
@@ -191,29 +172,6 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                     if (!inline && (match || codeString.includes('\n'))) {
                       return (
                         <div className="relative group/code my-4">
-                          <div className="absolute top-2 right-2 z-10 opacity-0 group-hover/code:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => handleCopyCode(codeString, codeIndex)}
-                              className="px-3 py-1.5 bg-gray-800/90 hover:bg-gray-700/90 border border-gray-600/50 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all duration-200 flex items-center gap-1.5 shadow-lg backdrop-blur-sm"
-                              title="Code kopieren"
-                            >
-                              {copiedCodeIndex === codeIndex ? (
-                                <>
-                                  <svg className="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                  <span>Kopiert!</span>
-                                </>
-                              ) : (
-                                <>
-                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                  </svg>
-                                  <span>Kopieren</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
                           {match && (
                             <div className="absolute top-2 left-2 z-10">
                               <span className="px-2 py-1 bg-gray-800/90 border border-gray-600/50 rounded text-xs font-mono font-medium text-gray-400 uppercase tracking-wider">
@@ -498,6 +456,15 @@ const Message: React.FC<MessageProps> = ({ message }) => {
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+        {isBot && message.model && (
+          <div className="mt-2 flex justify-center">
+            <div className="max-w-3xl w-full">
+              <p className="text-xs text-gray-500 italic text-left">
+                {getModelLabel(message.model)}
+              </p>
             </div>
           </div>
         )}

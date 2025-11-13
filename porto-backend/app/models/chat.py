@@ -21,6 +21,7 @@ class ChatRequest(BaseModel):
     message: str = Field(..., description="User message", min_length=1, max_length=10000)
     thread_id: Optional[str] = Field(default=None, description="Thread ID for conversation continuity")
     debug_mode: bool = Field(default=False, description="Enable debug mode for detailed tool inspection")
+    model: Optional[str] = Field(default=None, description="LLM model to use for this request")
 
 
 @dataclass

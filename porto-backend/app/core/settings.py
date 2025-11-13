@@ -19,12 +19,6 @@ class Settings(BaseSettings):
     # LLM Settings
     groq_api_key: Optional[str] = None
     openai_api_key: Optional[str] = None
-    default_model: str = "llama-3.1-70b-versatile"
-    default_temperature: float = 0.1
-    
-    # Vector Store Settings
-    portfolio_db_path: str = "portfolio-db"
-    knowledge_base_path: str = "data/portfolio-knowledge.json"
     
     # Tavily Settings
     tavily_api_key: Optional[str] = None

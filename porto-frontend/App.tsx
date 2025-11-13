@@ -22,6 +22,23 @@ interface ChatTab {
 
 const STORAGE_KEY_TABS = 'portfolio-ai-tabs';
 const STORAGE_KEY_ACTIVE_TAB = 'portfolio-ai-active-tab';
+const STORAGE_KEY_SELECTED_MODEL = 'portfolio-ai-selected-model';
+
+const AVAILABLE_MODELS = [
+  { value: 'qwen/qwen3-32b', label: 'Qwen 3 32B', provider: 'Qwen' },
+  { value: 'meta-llama/llama-4-maverick-17b-128e-instruct', label: 'Llama 4 Maverick 17B', provider: 'Meta' },
+  { value: 'meta-llama/llama-4-scout-17b-16e-instruct', label: 'Llama 4 Scout 17B', provider: 'Meta' },
+  { value: 'moonshotai/kimi-k2-instruct-0905', label: 'Kimi K2', provider: 'Moonshot' },
+  { value: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B', provider: 'OpenAI' },
+  { value: 'openai/gpt-oss-20b', label: 'GPT-OSS 20B', provider: 'OpenAI' },
+  { value: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B Instant', provider: 'Meta' },
+  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', provider: 'Meta' },
+];
+
+const getModelLabel = (value: string): string => {
+  const model = AVAILABLE_MODELS.find(m => m.value === value);
+  return model ? model.label : value;
+};
 
 const createInitialMessage = (): MessageType => ({
       id: 'initial',
@@ -90,6 +107,12 @@ const App = () => {
   const [isTabsSidebarOpen, setIsTabsSidebarOpen] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<string>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_SELECTED_MODEL);
+    return saved || 'meta-llama/llama-4-scout-17b-16e-instruct';
+  });
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
+  const modelDropdownRef = useRef<HTMLDivElement>(null);
   const [backendStatus, setBackendStatus] = useState<{
     isChecking: boolean;
     isError: boolean;
@@ -133,6 +156,34 @@ const App = () => {
   useEffect(() => {
     saveTabsToStorage(tabs, activeTabId);
   }, [tabs, activeTabId]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_SELECTED_MODEL, selectedModel);
+  }, [selectedModel]);
+
+  // Close dropdown when clicking outside or pressing ESC
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modelDropdownRef.current && !modelDropdownRef.current.contains(event.target as Node)) {
+        setIsModelDropdownOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isModelDropdownOpen) {
+        setIsModelDropdownOpen(false);
+      }
+    };
+
+    if (isModelDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
+      };
+    }
+  }, [isModelDropdownOpen]);
 
   // Backend health check function
   const performHealthCheck = useCallback(async (isManualRetry = false) => {
@@ -230,7 +281,7 @@ const App = () => {
     setIsLoading(true);
 
     try {
-      const response = await sendChatMessage(text, threadId, debugMode);
+      const response = await sendChatMessage(text, threadId, debugMode, selectedModel);
       
       const toolCallsArray: FunctionCall[] = response.toolCalls && response.toolCalls.length > 0 
         ? response.toolCalls.map((tc) => ({
@@ -249,6 +300,7 @@ const App = () => {
               text: response.answer,
               isStreaming: false,
               toolCalls: toolCallsArray.length > 0 ? toolCallsArray : undefined,
+              model: selectedModel,
             }
           : msg
         ),
@@ -298,7 +350,6 @@ const App = () => {
       const newTab = createNewTab();
       setTabs([newTab]);
       setActiveTabId(newTab.id);
-      setToastMessage('Letzter Tab wurde zurückgesetzt');
     } else {
       const newTabs = tabs.filter(tab => tab.id !== tabId);
       setTabs(newTabs);
@@ -318,7 +369,6 @@ const App = () => {
       threadId: null,
       toolCalls: [],
     });
-    setToastMessage('Chat wurde gelöscht');
   };
   
   // Show maintenance screen if backend is not healthy
@@ -349,6 +399,76 @@ const App = () => {
             </button>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
+            <div className="relative" ref={modelDropdownRef}>
+              <button
+                onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-800 flex items-center gap-1.5 md:gap-2 min-w-[140px] md:min-w-[200px] justify-between"
+                title={`Aktuelles Modell: ${getModelLabel(selectedModel)}`}
+                aria-label="LLM Modell auswählen"
+                aria-expanded={isModelDropdownOpen}
+              >
+                <div className="flex items-center gap-1.5 md:gap-2 flex-1 min-w-0">
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  <span className="hidden sm:inline truncate text-left">{getModelLabel(selectedModel)}</span>
+                  <span className="sm:hidden">Models</span>
+                </div>
+                <svg 
+                  className={`w-4 h-4 text-gray-400 transition-transform duration-200 flex-shrink-0 ${isModelDropdownOpen ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {isModelDropdownOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setIsModelDropdownOpen(false)}
+                    aria-hidden="true"
+                  />
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 md:right-0 left-auto mt-2 w-[calc(100vw-2rem)] md:w-72 max-w-[280px] md:max-w-none bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 max-h-[400px] overflow-y-auto animate-fade-in">
+                    <div className="p-2">
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                        LLM Modell
+                      </div>
+                      {AVAILABLE_MODELS.map((model) => (
+                        <button
+                          key={model.value}
+                          onClick={() => {
+                            setSelectedModel(model.value);
+                            setIsModelDropdownOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg transition-all duration-150 flex items-center justify-between group ${
+                            selectedModel === model.value
+                              ? 'bg-teal-600/20 text-teal-300 border border-teal-500/30'
+                              : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm truncate">{model.label}</div>
+                            <div className="text-xs text-gray-500 group-hover:text-gray-400 truncate mt-0.5">
+                              {model.provider}
+                            </div>
+                          </div>
+                          {selectedModel === model.value && (
+                            <svg className="w-4 h-4 text-teal-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
             <button
               onClick={() => setDebugMode(!debugMode)}
               className={`px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm active:scale-95 rounded-lg transition-all duration-200 flex items-center gap-1.5 md:gap-2 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-800 ${
@@ -390,14 +510,14 @@ const App = () => {
             </button>
             <button
               onClick={handleClearChat}
-              className="px-3 md:px-5 py-2 md:py-2.5 text-xs md:text-sm bg-gray-700 hover:bg-gray-600 active:scale-95 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+              className="px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm bg-gray-700 hover:bg-gray-600 active:scale-95 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-gray-800 flex items-center gap-1.5 md:gap-2"
               title="Clear chat history"
               aria-label="Clear chat history"
             >
-              <svg className="w-4 h-4 inline-block md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
-              <span className="hidden md:inline">Clear Chat</span>
+              <span className="hidden sm:inline">Clear Chat</span>
             </button>
           </div>
         </div>
@@ -474,7 +594,7 @@ const App = () => {
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-7">
                       <button
-                        onClick={() => handleSendMessage("Was sind deine Hauptprojekte?")}
+                        onClick={() => handleSendMessage("Was sind Hermans Hauptprojekte?")}
                         disabled={isLoading}
                         className="p-5 bg-gray-800/60 hover:bg-gray-800/70 border-2 border-gray-700/50 hover:border-teal-500/40 rounded-2xl text-left transition-all duration-500 ease-out group shadow-md hover:shadow-lg hover:shadow-teal-500/10 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] animate-slide-up"
                         style={{ animationDelay: '100ms' }}
@@ -487,13 +607,13 @@ const App = () => {
                           </div>
                           <div className="flex-1">
                             <div className="text-white font-bold mb-1.5 group-hover:text-teal-200 transition-colors duration-500 ease-out text-base">Projekte</div>
-                            <div className="text-sm text-gray-400 leading-relaxed">Was sind deine Hauptprojekte?</div>
+                            <div className="text-sm text-gray-400 leading-relaxed">Was sind Hermans Hauptprojekte?</div>
                           </div>
                         </div>
                       </button>
                       
                       <button
-                        onClick={() => handleSendMessage("Welche Skills und Technologien beherrschst du?")}
+                        onClick={() => handleSendMessage("Welche Skills und Technologien beherrscht Herman?")}
                         disabled={isLoading}
                         className="p-5 bg-gray-800/60 hover:bg-gray-800/70 border-2 border-gray-700/50 hover:border-purple-500/40 rounded-2xl text-left transition-all duration-500 ease-out group shadow-md hover:shadow-lg hover:shadow-purple-500/10 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] animate-slide-up"
                         style={{ animationDelay: '200ms' }}
@@ -506,13 +626,13 @@ const App = () => {
                           </div>
                           <div className="flex-1">
                             <div className="text-white font-bold mb-1.5 group-hover:text-purple-200 transition-colors duration-500 ease-out text-base">Skills</div>
-                            <div className="text-sm text-gray-400 leading-relaxed">Welche Technologien beherrschst du?</div>
+                            <div className="text-sm text-gray-400 leading-relaxed">Welche Technologien beherrscht Herman?</div>
                           </div>
                         </div>
                       </button>
                       
                       <button
-                        onClick={() => handleSendMessage("Erzähle mir von deiner Berufserfahrung")}
+                        onClick={() => handleSendMessage("Erzähle mir von Hermans Berufserfahrung")}
                         disabled={isLoading}
                         className="p-5 bg-gray-800/60 hover:bg-gray-800/70 border-2 border-gray-700/50 hover:border-blue-500/40 rounded-2xl text-left transition-all duration-500 ease-out group shadow-md hover:shadow-lg hover:shadow-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] animate-slide-up"
                         style={{ animationDelay: '300ms' }}
@@ -525,13 +645,13 @@ const App = () => {
                           </div>
                           <div className="flex-1">
                             <div className="text-white font-bold mb-1.5 group-hover:text-blue-200 transition-colors duration-500 ease-out text-base">Erfahrung</div>
-                            <div className="text-sm text-gray-400 leading-relaxed">Erzähle mir von deiner Berufserfahrung</div>
+                            <div className="text-sm text-gray-400 leading-relaxed">Erzähle mir von Hermans Berufserfahrung</div>
                           </div>
                         </div>
                       </button>
                       
                       <button
-                        onClick={() => handleSendMessage("Wie kann ich dich kontaktieren?")}
+                        onClick={() => handleSendMessage("Wie kann ich Herman kontaktieren?")}
                         disabled={isLoading}
                         className="p-5 bg-gray-800/60 hover:bg-gray-800/70 border-2 border-gray-700/50 hover:border-green-500/40 rounded-2xl text-left transition-all duration-500 ease-out group shadow-md hover:shadow-lg hover:shadow-green-500/10 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] animate-slide-up"
                         style={{ animationDelay: '400ms' }}
@@ -544,7 +664,7 @@ const App = () => {
                           </div>
                           <div className="flex-1">
                             <div className="text-white font-bold mb-1.5 group-hover:text-green-200 transition-colors duration-500 ease-out text-base">Kontakt</div>
-                            <div className="text-sm text-gray-400 leading-relaxed">Wie kann ich dich kontaktieren?</div>
+                            <div className="text-sm text-gray-400 leading-relaxed">Wie kann ich Herman kontaktieren?</div>
                           </div>
                         </div>
                       </button>

@@ -105,6 +105,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage, isLoading })
             placeholder={isLoading ? "AI is thinking..." : "How can I assist you today?"}
             disabled={isLoading}
             rows={1}
+            spellCheck={false}
             className="w-full bg-gray-700/80 text-white border border-gray-600 py-4 md:py-4.5 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 focus:bg-gray-700 transition-all shadow-md hover:shadow-lg placeholder:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm leading-relaxed resize-none overflow-hidden min-h-[3rem] max-h-[12rem]"
             autoFocus
           />

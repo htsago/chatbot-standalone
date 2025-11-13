@@ -41,6 +41,13 @@ const TabsSidebar: React.FC<TabsSidebarProps> = ({
     });
   };
 
+  // Sort tabs by createdAt (newest first)
+  const sortedTabs = [...tabs].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return dateB - dateA; // Descending order (newest first)
+  });
+
   return (
     <div className="w-full md:w-[420px] h-full bg-gray-800/95 md:bg-gray-800/50 backdrop-blur-sm border-r border-gray-700/50 overflow-y-auto overflow-x-hidden shadow-xl md:shadow-none">
       <div className="p-4 md:p-5">
@@ -77,7 +84,7 @@ const TabsSidebar: React.FC<TabsSidebarProps> = ({
 
         {/* Tabs List */}
         <div className="space-y-1">
-          {tabs.map((tab, index) => {
+          {sortedTabs.map((tab, index) => {
             const isActive = activeTabId === tab.id;
             const messageCount = tab.messages.length - 1;
             

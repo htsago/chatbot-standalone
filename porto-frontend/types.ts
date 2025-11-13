@@ -69,4 +69,5 @@ export interface Message {
     name: string;
     result: ToolResultContent;
   };
+  model?: string;
 }

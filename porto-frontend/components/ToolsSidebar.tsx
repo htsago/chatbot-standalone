@@ -152,7 +152,7 @@ const ToolsSidebar = ({ toolCalls = [] }: ToolsSidebarProps) => {
                   </span>
                   {isUsed && (
                     <span className="text-xs px-1.5 py-0.5 bg-green-600/40 text-green-200 border border-green-500/50 rounded font-semibold flex-shrink-0 animate-pulse">
-                      Aktiv
+                      actif
                     </span>
                   )}
                 </div>

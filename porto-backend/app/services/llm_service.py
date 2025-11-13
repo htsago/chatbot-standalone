@@ -35,6 +35,7 @@ class LLMService:
             self.tool_manager = ToolManager()
             self.tool_manager.set_vector_store(self.vector_store)
             
+            self.current_model = DEFAULT_MODEL
             self.llm = ChatGroq(model=DEFAULT_MODEL, temperature=DEFAULT_TEMPERATURE)
             self.checkpointer = InMemorySaver()
             self.message_parser = MessageParser()
@@ -78,7 +79,7 @@ class LLMService:
             pass
         return 0
 
-    def invoke(self, query: str, thread_id: Optional[str] = None, debug_mode: bool = False) -> tuple[str, str, list[dict], Optional[dict]]:
+    def invoke(self, query: str, thread_id: Optional[str] = None, debug_mode: bool = False, model: Optional[str] = None) -> tuple[str, str, list[dict], Optional[dict]]:
         """Invoke the agent with a query."""
         try:
             if debug_mode:
@@ -86,6 +87,14 @@ class LLMService:
                 self.debug_service.reset()
             else:
                 self.debug_service.disable()
+            
+            # Update LLM if model is provided and different from current
+            if model and model != self.current_model:
+                self.current_model = model
+                self.llm = ChatGroq(model=model, temperature=DEFAULT_TEMPERATURE)
+                # Recreate agent with new model
+                self.agent = self._create_agent(debug_mode=debug_mode)
+                logger.info(f"Switched to model: {model}")
             
             if debug_mode != self._last_debug_mode:
                 self.agent = self._create_agent(debug_mode=debug_mode)
