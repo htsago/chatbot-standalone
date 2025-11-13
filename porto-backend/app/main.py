@@ -19,7 +19,7 @@ settings = get_settings()
 
 # Create FastAPI app
 app = FastAPI(
-    title="Herman AI - Portfolio Chatbot API",
+    title="AI Studio - Portfolio Chatbot API",
     description="AI-powered chatbot for Herman Tsago's portfolio",
     version="1.0.0"
 )
@@ -48,4 +48,4 @@ def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8090)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8090, reload=True)

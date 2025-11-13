@@ -143,6 +143,20 @@ a:hover {
   text-decoration: underline;
 }
 
+/* Rotating gear animation for backend status */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 /* Better code block styling */
 code {
   background-color: rgba(0, 0, 0, 0.3);
@@ -237,6 +251,9 @@ pre code {
   margin: 1rem 0;
   border: 1px solid rgba(75, 85, 99, 0.3);
   position: relative;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .prose pre code {
@@ -319,11 +336,17 @@ pre code {
 pre[class*="language-"] {
   background: #1e293b !important;
   border: 1px solid rgba(75, 85, 99, 0.3) !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
 }
 
 code[class*="language-"] {
   color: #e2e8f0 !important;
   text-shadow: none !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
 }
 
 .token.property,

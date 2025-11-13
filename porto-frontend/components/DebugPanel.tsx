@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/components/prism-json';
@@ -27,8 +27,9 @@ interface DebugPanelProps {
 }
 
 // JSON Code Block Component with Prism.js
-const JsonCodeBlock: React.FC<{ data: any; maxHeight?: string }> = ({ data, maxHeight = '600px' }) => {
+const JsonCodeBlock: React.FC<{ data: any; maxHeight?: string; title?: string }> = ({ data, maxHeight = '600px', title }) => {
   const codeRef = useRef<HTMLElement | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
     if (codeRef.current) {
@@ -38,31 +39,99 @@ const JsonCodeBlock: React.FC<{ data: any; maxHeight?: string }> = ({ data, maxH
 
   const jsonString = JSON.stringify(data, null, 2);
 
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(jsonString);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
   return (
-    <pre className="bg-gray-900 rounded p-3 text-xs overflow-x-auto overflow-y-auto" style={{ maxHeight }}>
-      <code ref={codeRef as React.RefObject<HTMLElement>} className="language-json">
-        {jsonString}
-      </code>
-    </pre>
+    <div className="relative">
+      <div className="flex items-center justify-between mb-2">
+        {title && <span className="text-xs text-gray-400 font-medium">{title}</span>}
+        <button
+          onClick={handleCopy}
+          className="ml-auto px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded transition-colors flex items-center gap-1.5 text-gray-300 hover:text-white"
+          title="JSON kopieren"
+        >
+          {isCopied ? (
+            <>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Kopiert!</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Kopieren</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="bg-gray-900 rounded p-3 text-xs overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words" style={{ maxHeight }}>
+        <code ref={codeRef as React.RefObject<HTMLElement>} className="language-json break-words">
+          {jsonString}
+        </code>
+      </pre>
+    </div>
   );
 };
 
 const DebugPanel: React.FC<DebugPanelProps> = ({ debugInfo, isOpen, onClose }) => {
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['agent', 'tools']));
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
 
   if (!isOpen || !debugInfo) return null;
 
   const toolExecutions = debugInfo.tool_executions || [];
 
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => {
+      const next = new Set(prev);
+      if (next.has(section)) {
+        next.delete(section);
+      } else {
+        next.add(section);
+      }
+      return next;
+    });
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-[95vw] h-[90vh] flex flex-col">
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-[95vw] h-[90vh] flex flex-col animate-fade-in">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700">
-          <h2 className="text-2xl font-bold text-white">Debug & Development Mode</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-white">Debug & Development Mode</h2>
+            <span className="px-2 py-1 text-xs font-medium bg-purple-600/20 text-purple-300 rounded">
+              {debugInfo.total_tool_calls || 0} Tools
+            </span>
+          </div>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
             aria-label="Close debug panel"
+            title="Schließen (ESC)"
           >
             <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -77,26 +146,58 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ debugInfo, isOpen, onClose }) =
             {/* Agent Response */}
             {debugInfo.agent_response && (
               <div className="bg-gray-900 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-white mb-4">Agent Response</h3>
-                <p className="text-sm text-gray-400 mb-4">
-                  Vollständiges Response-Objekt vom Agent
-                </p>
-                <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                  <JsonCodeBlock data={debugInfo.agent_response} maxHeight="600px" />
-                </div>
+                <button
+                  onClick={() => toggleSection('agent')}
+                  className="w-full flex items-center justify-between mb-4 group"
+                >
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-semibold text-white">Agent Response</h3>
+                    <span className="text-xs text-gray-500">Vollständiges Response-Objekt</span>
+                  </div>
+                  <svg 
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${expandedSections.has('agent') ? 'rotate-180' : ''}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {expandedSections.has('agent') && (
+                  <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <JsonCodeBlock data={debugInfo.agent_response} maxHeight="600px" />
+                  </div>
+                )}
               </div>
             )}
 
             {/* Tool Executions */}
             <div className="bg-gray-900 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-white mb-4">Tool Executions</h3>
-              <div className="text-sm text-gray-400 mb-4">
-                Total: {debugInfo.total_tool_calls || 0} tool calls
-              </div>
-              {toolExecutions.length === 0 ? (
-                <p className="text-gray-500">No tool executions recorded</p>
-              ) : (
-                <div className="space-y-4">
+              <button
+                onClick={() => toggleSection('tools')}
+                className="w-full flex items-center justify-between mb-4 group"
+              >
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg font-semibold text-white">Tool Executions</h3>
+                  <span className="text-sm text-gray-400">
+                    {debugInfo.total_tool_calls || 0} {debugInfo.total_tool_calls === 1 ? 'call' : 'calls'}
+                  </span>
+                </div>
+                <svg 
+                  className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${expandedSections.has('tools') ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {expandedSections.has('tools') && (
+                <>
+                  {toolExecutions.length === 0 ? (
+                    <p className="text-gray-500">No tool executions recorded</p>
+                  ) : (
+                    <div className="space-y-4">
                   {toolExecutions.map((exec, idx) => (
                     <div key={idx} className="bg-gray-800 rounded-lg p-4 border border-gray-700">
                       <div className="flex items-start justify-between mb-3">
@@ -122,23 +223,25 @@ const DebugPanel: React.FC<DebugPanelProps> = ({ debugInfo, isOpen, onClose }) =
                       ) : null}
 
                       <div className="mb-3">
-                        <p className="text-xs text-gray-400 mb-1">Arguments:</p>
-                        <div className="bg-gray-900 rounded p-2">
-                          <JsonCodeBlock data={exec.args} maxHeight="200px" />
-                        </div>
+                        <JsonCodeBlock data={exec.args} maxHeight="200px" title="Arguments" />
                       </div>
 
                       <div>
-                        <p className="text-xs text-gray-400 mb-1">Result:</p>
-                        <pre className="bg-gray-900 rounded p-2 text-xs text-gray-300 overflow-x-auto max-h-48 overflow-y-auto">
-                          {exec.result.length > 500 
-                            ? `${exec.result.substring(0, 500)}...` 
-                            : exec.result}
+                        <div className="flex items-center justify-between mb-1">
+                          <p className="text-xs text-gray-400 font-medium">Result</p>
+                          <span className="text-xs text-gray-500">
+                            {exec.result.length} chars
+                          </span>
+                        </div>
+                        <pre className="bg-gray-900 rounded p-3 text-xs text-gray-300 overflow-x-auto max-h-64 overflow-y-auto whitespace-pre-wrap break-words">
+                          {exec.result}
                         </pre>
                       </div>
                     </div>
                   ))}
-                </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

@@ -68,7 +68,17 @@ export async function sendChatMessage(
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // Handle 409 Too Many Tokens error specifically
+      if (response.status === 409) {
+        const errorData = await response.json().catch(() => ({ detail: 'Die Konversation ist zu lang geworden. Bitte starte einen neuen Chat-Tab, um fortzufahren.' }));
+        const error = new Error(errorData.detail || 'Die Konversation ist zu lang geworden. Bitte starte einen neuen Chat-Tab, um fortzufahren.');
+        (error as any).status = 409;
+        throw error;
+      }
+      const errorText = await response.text().catch(() => '');
+      const error = new Error(`HTTP error! status: ${response.status}${errorText ? ` - ${errorText}` : ''}`);
+      (error as any).status = response.status;
+      throw error;
     }
 
     const data: ChatResponse = await response.json();
@@ -156,6 +166,38 @@ export async function getTools(): Promise<ToolsResponse> {
   } catch (error) {
     console.error('Error fetching tools:', error);
     throw error;
+  }
+}
+
+export async function checkBackendHealth(): Promise<boolean> {
+  try {
+    // Create abort controller for timeout (fallback for browsers that don't support AbortSignal.timeout)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = await response.json();
+    return data.status === 'healthy';
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Backend health check timed out');
+    } else {
+      console.error('Backend health check failed:', error);
+    }
+    return false;
   }
 }
 

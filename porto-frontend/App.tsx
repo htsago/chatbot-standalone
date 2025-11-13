@@ -1,13 +1,14 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Message from './components/Message';
 import MessageInput from './components/MessageInput';
 import Toast from './components/Toast';
 import ToolsSidebar from './components/ToolsSidebar';
 import TabsSidebar from './components/TabsSidebar';
 import DebugPanel from './components/DebugPanel';
+import MaintenanceScreen from './components/MaintenanceScreen';
 import { BotIcon } from './components/icons';
 import { type Message as MessageType, type FunctionCall } from './types';
-import { sendChatMessage } from './services/apiService';
+import { sendChatMessage, checkBackendHealth } from './services/apiService';
 
 interface ChatTab {
   id: string;
@@ -25,7 +26,7 @@ const STORAGE_KEY_ACTIVE_TAB = 'portfolio-ai-active-tab';
 const createInitialMessage = (): MessageType => ({
       id: 'initial',
       role: 'model',
-      text: "Hallo! Ich bin Herman AI, dein intelligenter Assistent. Wie kann ich dir heute helfen? Frag mich alles über Projekte, Erfahrungen, Skills oder IT-Themen!",
+      text: "Hallo! Ich bin AI Studio, dein intelligenter Assistent. Wie kann ich dir heute helfen? Frag mich alles über Projekte, Erfahrungen, Skills oder IT-Themen!",
       timestamp: new Date(),
 });
 
@@ -89,6 +90,16 @@ const App = () => {
   const [isTabsSidebarOpen, setIsTabsSidebarOpen] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [isDebugPanelOpen, setIsDebugPanelOpen] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<{
+    isChecking: boolean;
+    isError: boolean;
+    isHealthy: boolean;
+    errorMessage?: string;
+  }>({
+    isChecking: true,
+    isError: false,
+    isHealthy: false,
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-close sidebars on mobile devices
@@ -122,6 +133,72 @@ const App = () => {
   useEffect(() => {
     saveTabsToStorage(tabs, activeTabId);
   }, [tabs, activeTabId]);
+
+  // Backend health check function
+  const performHealthCheck = useCallback(async (isManualRetry = false) => {
+    setBackendStatus(prev => {
+      // Only update checking state if we're doing a manual retry or if we're not currently checking
+      if (isManualRetry && !prev.isChecking) {
+        return { ...prev, isChecking: true, isError: false, isHealthy: false };
+      }
+      // For periodic checks, only update if we're not already checking
+      if (!isManualRetry && !prev.isChecking && !prev.isHealthy) {
+        return { ...prev, isChecking: true };
+      }
+      return prev;
+    });
+
+    try {
+      const isHealthy = await checkBackendHealth();
+      setBackendStatus(prev => {
+        // Only update if the status actually changed
+        if (prev.isHealthy === isHealthy && !prev.isChecking) {
+          return prev; // No change, don't update
+        }
+        return {
+          isChecking: false,
+          isError: !isHealthy,
+          isHealthy: isHealthy,
+          errorMessage: isHealthy ? undefined : 'Backend nicht erreichbar. Bitte überprüfe, ob der Server läuft.',
+        };
+      });
+    } catch (error) {
+      setBackendStatus(prev => {
+        // Only update if we're not already in error state
+        if (prev.isError && !prev.isHealthy && !prev.isChecking) {
+          return prev; // Already in error state, don't update
+        }
+        return {
+          isChecking: false,
+          isError: true,
+          isHealthy: false,
+          errorMessage: 'Backend-Verbindung fehlgeschlagen. Bitte überprüfe, ob der Server läuft.',
+        };
+      });
+    }
+  }, []);
+
+  // Initial health check on mount
+  useEffect(() => {
+    performHealthCheck();
+  }, [performHealthCheck]);
+
+  // Periodic health check every 30 seconds (only if backend is not healthy)
+  useEffect(() => {
+    // Only run periodic checks if backend is not healthy
+    if (backendStatus.isHealthy) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      // Only check if we're not currently checking
+      if (!backendStatus.isChecking) {
+        performHealthCheck();
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [performHealthCheck, backendStatus.isHealthy, backendStatus.isChecking]);
 
   const updateActiveTab = (updates: Partial<ChatTab>) => {
     setTabs(prev => prev.map(tab => 
@@ -183,17 +260,28 @@ const App = () => {
       setIsLoading(false);
     } catch (error) {
       console.error('Error sending message:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const isTokenLimitError = (error as any)?.status === 409;
+      
       updateActiveTab({
         messages: updatedMessages.map(msg => 
         msg.id === botMessageId 
           ? {
               ...msg,
-              text: `I'm sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`,
+              text: isTokenLimitError 
+                ? errorMessage 
+                : `Entschuldigung, es ist ein Fehler aufgetreten: ${errorMessage}. Bitte versuche es erneut.`,
               isStreaming: false,
             }
           : msg
         ),
       });
+      
+      if (isTokenLimitError) {
+        setToastMessage(errorMessage);
+        setToastType('error');
+      }
+      
       setIsLoading(false);
     }
   };
@@ -233,6 +321,16 @@ const App = () => {
     setToastMessage('Chat wurde gelöscht');
   };
   
+  // Show maintenance screen if backend is not healthy
+  if (!backendStatus.isHealthy) {
+    return (
+      <MaintenanceScreen
+        isChecking={backendStatus.isChecking}
+        onRetry={() => performHealthCheck(true)}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white font-sans">
       <header className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700 shadow-lg z-10">
@@ -367,11 +465,8 @@ const App = () => {
                         <BotIcon className="w-10 h-10" color="text-teal-400" />
                       </div>
                       <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-white via-teal-200 to-teal-400 bg-clip-text text-transparent">
-                        Herman AI
+                        AI Studio
                       </h2>
-                      <p className="text-gray-300 text-lg md:text-xl leading-relaxed mb-3 font-medium">
-                        Dein intelligenter Assistent für Portfolio & IT-Fragen
-                      </p>
                       <p className="text-gray-400 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
                         Frag mich alles über Projekte, Erfahrungen, Skills oder allgemeine IT-Themen
                       </p>
