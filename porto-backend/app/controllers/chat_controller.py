@@ -6,7 +6,7 @@ from fastapi import HTTPException, Depends
 
 from app.core.dependencies import get_llm_service
 from app.core.exceptions import ValidationError, LLMServiceError
-from app.models.chat import ChatRequest, ChatResponse, Question, Response, ToolCall
+from app.models.chat import ChatRequest, ChatResponse, ToolCall
 from app.services.llm_service import LLMService
 
 logger = logging.getLogger(__name__)
@@ -43,21 +43,6 @@ class ChatController:
         except LLMServiceError as e:
             logger.error(f"LLM service error: {e}")
             raise HTTPException(status_code=500, detail="Error processing your message")
-        except Exception as e:
-            logger.error(f"Unexpected error: {e}", exc_info=True)
-            raise HTTPException(status_code=500, detail="Internal server error")
-    
-    def process_query(self, request: Question) -> dict[str, Any]:
-        """Process a simple query request."""
-        try:
-            query = self._validate_message(request.query)
-            answer, _, _, _ = self.llm_service.invoke(query)
-            return Response(answer=answer).fetch_answer()
-        except ValidationError as e:
-            raise HTTPException(status_code=400, detail=str(e))
-        except LLMServiceError as e:
-            logger.error(f"LLM service error: {e}")
-            raise HTTPException(status_code=500, detail="Error processing query")
         except Exception as e:
             logger.error(f"Unexpected error: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail="Internal server error")

@@ -3,19 +3,6 @@ from typing import Optional
 from dataclasses import dataclass
 
 
-@dataclass
-class Question:
-    query: str
-
-
-@dataclass
-class Response:
-    answer: str
-
-    def fetch_answer(self) -> dict:
-        return {"answer": self.answer}
-
-
 class ChatRequest(BaseModel):
     """Chat request model."""
     message: str = Field(..., description="User message", min_length=1, max_length=10000)

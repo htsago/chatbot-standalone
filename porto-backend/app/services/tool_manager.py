@@ -83,24 +83,24 @@ class ToolManager:
         tools_data = [
             {
                 "name": "retriever_tool",
-                "description": "Retrieve information from portfolio knowledge base.",
+                "description": "Retrieve information from portfolio knowledge base about Herman Tsago. USE THIS TOOL EXCLUSIVELY for questions about Herman Tsago (projects, skills, experience, contact, portfolio). DO NOT use web_search_tool for Herman Tsago questions.",
                 "parameters": {
                     "query": {
                         "type": "string",
-                        "description": "Search query to find relevant information"
+                        "description": "Search query to find relevant information about Herman Tsago"
                     }
                 },
                 "required": ["query"]
             },
             {
                 "name": "get_current_datetime",
-                "description": "Get current date and time.",
+                "description": "Get current date and time. Use this tool ONLY for questions about date/time.",
                 "parameters": {},
                 "required": []
             },
             {
                 "name": "web_search_tool",
-                "description": "Search the web using Tavily API.",
+                "description": "Search the web using Tavily API for general IT questions and technical topics. DO NOT use this tool for questions about Herman Tsago - use retriever_tool instead.",
                 "parameters": {
                     "query": {
                         "type": "string",
@@ -179,8 +179,7 @@ class ToolManager:
 
         @tool
         def retriever_tool(query: str) -> str:
-            """Retrieve information from portfolio knowledge base about Herman Tsago.
-            Use this tool ONLY for questions about Herman Tsago (projects, skills, experience, contact, portfolio)."""
+            """Retrieve information from portfolio knowledge base about Herman Tsago. USE THIS TOOL EXCLUSIVELY for questions about Herman Tsago (projects, skills, experience, contact, portfolio). DO NOT use web_search_tool for Herman Tsago questions."""
             return retriever_impl(query)
 
         @tool
@@ -190,7 +189,7 @@ class ToolManager:
 
         @tool
         def web_search_tool(query: str) -> str:
-            """Search the web using Tavily API for general IT questions and technical topics."""
+            """Search the web using Tavily API for general IT questions and technical topics. DO NOT use this tool for questions about Herman Tsago - use retriever_tool instead."""
             return web_search_impl(query)
 
         return [retriever_tool, get_current_datetime, web_search_tool]

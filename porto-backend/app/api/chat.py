@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from app.controllers.chat_controller import ChatController, get_chat_controller
-from app.models.chat import ChatRequest, ChatResponse, Question
+from app.models.chat import ChatRequest, ChatResponse
 from app.core.dependencies import get_llm_service, get_tool_manager
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
@@ -18,15 +18,6 @@ def process_chat_message(
 ):
     """Process a chat message."""
     return controller.process_chat_message(request)
-
-
-@router.post("/process_query")
-def process_query(
-    request: Question,
-    controller: ChatController = Depends(get_chat_controller)
-):
-    """Process a simple query."""
-    return controller.process_query(request)
 
 
 @router.get("/tools")
