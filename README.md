@@ -2,6 +2,12 @@
 
 A modern AI-powered chatbot assistant built with React (Frontend) and FastAPI (Backend). This document focuses on the core architectural concepts: how the agent works, conversation management, and memory handling.
 
+## Screenshot
+
+![Chat Interface](docs/img.png)
+
+*The chat interface showing a conversation with the AI assistant, including the chat history sidebar, main conversation area, and tools panel on the right.*
+
 ## Core Concepts
 
 ### How the Agent Works
