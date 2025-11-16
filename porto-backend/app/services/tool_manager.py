@@ -54,7 +54,7 @@ class ToolManager:
             if not api_key:
                 return "Web search unavailable. Configure TAVILY_API_KEY."
 
-            response = TavilyClient(api_key=api_key).search(query=query, max_results=WEB_SEARCH_MAX_RESULTS)
+            response = TavilyClient(api_key=api_key).search(query=query, max_results=WEB_SEARCH_MAX_RESULTS,include_answer="advanced")
             results = response.get("results", [])
             if not results:
                 return "No search results found."
