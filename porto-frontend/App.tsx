@@ -26,7 +26,6 @@ const STORAGE_KEY_SELECTED_MODEL = 'portfolio-ai-selected-model';
 
 const AVAILABLE_MODELS = [
   { value: 'qwen/qwen3-32b', label: 'Qwen 3 32B', provider: 'Qwen' },
-  { value: 'meta-llama/llama-4-maverick-17b-128e-instruct', label: 'Llama 4 Maverick 17B', provider: 'Meta' },
   { value: 'meta-llama/llama-4-scout-17b-16e-instruct', label: 'Llama 4 Scout 17B', provider: 'Meta' },
   { value: 'moonshotai/kimi-k2-instruct-0905', label: 'Kimi K2', provider: 'Moonshot' },
   { value: 'openai/gpt-oss-120b', label: 'GPT-OSS 120B', provider: 'OpenAI' },

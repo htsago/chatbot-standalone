@@ -11,7 +11,6 @@ const getModelLabel = (value: string | undefined): string => {
   if (!value) return '';
   const modelMap: Record<string, string> = {
     'qwen/qwen3-32b': 'Qwen 3 32B',
-    'meta-llama/llama-4-maverick-17b-128e-instruct': 'Llama 4 Maverick 17B',
     'meta-llama/llama-4-scout-17b-16e-instruct': 'Llama 4 Scout 17B',
     'moonshotai/kimi-k2-instruct-0905': 'Kimi K2',
     'openai/gpt-oss-120b': 'GPT-OSS 120B',
